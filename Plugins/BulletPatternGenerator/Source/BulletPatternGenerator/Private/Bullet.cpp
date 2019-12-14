@@ -17,6 +17,9 @@ ABullet::ABullet()
 
 	StaticMeshComponent->SetStaticMesh(SM_Bullet);
 	StaticMeshComponent->SetEnableGravity(false);
+	StaticMeshComponent->SetGenerateOverlapEvents(true);
+	StaticMeshComponent->SetCollisionProfileName("OverlapAll");
+	StaticMeshComponent->SetCanEverAffectNavigation(false);
 	StaticMeshComponent->bIgnoreRadialForce = true;
 	StaticMeshComponent->bIgnoreRadialImpulse = true;
 	StaticMeshComponent->bApplyImpulseOnDamage = false;
@@ -36,5 +39,5 @@ void ABullet::BeginPlay()
 
 void ABullet::OnBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-		
+
 }
