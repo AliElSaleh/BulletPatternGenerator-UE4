@@ -13,5 +13,9 @@ UCLASS()
 class BULLETPATTERNGENERATOR_API ADamageableBullet : public ABullet
 {
 	GENERATED_BODY()
+
+public:
+	ADamageableBullet();
+
 	
 };

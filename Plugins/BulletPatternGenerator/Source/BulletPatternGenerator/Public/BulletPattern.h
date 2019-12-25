@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class BULLETPATTERNGENERATOR_API UBulletPattern : public UDataAsset
 {
 	GENERATED_BODY()

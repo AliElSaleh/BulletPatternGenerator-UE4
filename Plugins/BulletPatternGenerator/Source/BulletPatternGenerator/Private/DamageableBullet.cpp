@@ -3,3 +3,11 @@
 
 #include "DamageableBullet.h"
 
+ADamageableBullet::ADamageableBullet()
+	: ABullet()
+{
+	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+
+	bCanBeDamaged = true;
+}
