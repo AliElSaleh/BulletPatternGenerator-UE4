@@ -42,6 +42,7 @@ void APooledActor::PooledActor_BeginPlay_Implementation()
 void APooledActor::PooledActor_EndPlay_Implementation()
 {
 	MarkNotInUse();
+	SetActorLocation(FVector(0.0f), false, nullptr, ETeleportType::TeleportPhysics);
 }
 
 void APooledActor::MarkInUse()

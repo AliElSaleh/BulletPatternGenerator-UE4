@@ -93,5 +93,6 @@ protected:
 		uint8 bInUse : 1;
 
 	// The pool that owns this actor
-	class AObjectPoolBase* PoolOwner;
+	UPROPERTY(BlueprintReadOnly, Category = "Pooled Actor")
+		class AObjectPoolBase* PoolOwner;
 };

@@ -4,12 +4,20 @@
 
 #include "Components/StaticMeshComponent.h"
 
+#include "GameFramework/ProjectileMovementComponent.h"
+
+#include "BulletPattern.h"
+
 #include "Engine/StaticMesh.h"
 
 ABullet::ABullet()
+	: APooledActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+
+	bEverAllowTick = false;
+	bEverAllowCollisions = true;
 
 	SM_Bullet = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'")));
 
@@ -18,8 +26,9 @@ ABullet::ABullet()
 
 	StaticMeshComponent->SetStaticMesh(SM_Bullet);
 	StaticMeshComponent->SetEnableGravity(false);
-	StaticMeshComponent->SetGenerateOverlapEvents(false);
+	StaticMeshComponent->SetGenerateOverlapEvents(true);
 	StaticMeshComponent->SetCollisionProfileName("OverlapAll");
+	StaticMeshComponent->SetCollisionObjectType(ECC_WorldDynamic);
 	StaticMeshComponent->SetCanEverAffectNavigation(false);
 	StaticMeshComponent->SetSimulatePhysics(false);
 	StaticMeshComponent->SetNotifyRigidBodyCollision(true);
@@ -29,8 +38,10 @@ ABullet::ABullet()
 	StaticMeshComponent->bReplicatePhysicsToAutonomousProxy = false;
 	StaticMeshComponent->CanCharacterStepUpOn = ECB_No;
 
-	StaticMeshComponent->OnComponentHit.AddDynamic(this, &ABullet::OnHit);
-
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
+	ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
+	ProjectileMovementComponent->Velocity = FVector(0.0f);
+	
 	bCanBeDamaged = false;
 	bFindCameraComponentWhenViewTarget = false;
 }
@@ -39,21 +50,23 @@ void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetLifeSpan(MaxLifetime);
+	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlap);
 }
 
-void ABullet::Destroyed()
+void ABullet::SetupBehaviour_Implementation(class UBulletPattern* BulletPattern)
 {
-	OnBulletDestroyed.Broadcast();
-	OnDestroyed();
+	if (!BulletPattern)
+		return;
+	
+	ProjectileMovementComponent->Velocity = Direction * Speed;
 }
 
-void ABullet::OnHit_Implementation(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ABullet::OnOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	OnBulletHit.Broadcast(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
-}
+	if (!OtherActor->IsA(StaticClass()))
+	{
+		OnBulletHit.Broadcast(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
-void ABullet::OnDestroyed_Implementation()
-{
-	OnBulletDestroyed.Broadcast();
+		PooledActor_EndPlay();
+	}
 }
