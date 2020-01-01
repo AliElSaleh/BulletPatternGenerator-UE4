@@ -70,7 +70,7 @@ protected:
 
 	// The list of object pools to spawn. Assign a name to an object pool to later retrieve it using the name at runtime
 	UPROPERTY(EditInstanceOnly, Category = "Object Pool Settings")
-		TMap<FString, TSubclassOf<class AObjectPoolBase>> ObjectPools;
+		TArray<TSubclassOf<class AObjectPoolBase>> ObjectPools;
 	
 private:
 	FVector Location;

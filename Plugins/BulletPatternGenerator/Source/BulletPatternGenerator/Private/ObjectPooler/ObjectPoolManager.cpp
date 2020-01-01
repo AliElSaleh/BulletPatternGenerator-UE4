@@ -25,7 +25,7 @@ void AObjectPoolManager::SpawnAllObjectPools()
 {
 	for (const auto ObjectPool : ObjectPools)
 	{
-		SpawnObjectPool(ObjectPool.Value);
+		SpawnObjectPool(ObjectPool);
 	}
 }
 
@@ -40,8 +40,8 @@ AObjectPoolBase* AObjectPoolManager::GetPool(const FString InPoolName)
 {
 	for (const auto ObjectPool : ObjectPools)
 	{
-		if (ObjectPool.Key == InPoolName)
-			return ObjectPool.Value.GetDefaultObject();
+		if (ObjectPool.GetDefaultObject()->GetPoolName().ToString() == InPoolName)
+			return ObjectPool.GetDefaultObject();
 	}
 
 	return nullptr;
@@ -51,8 +51,8 @@ FString AObjectPoolManager::GetPoolName(AObjectPoolBase* InObjectPool)
 {
 	for (const auto ObjectPool : ObjectPools)
 	{
-		if (ObjectPool.Value.GetDefaultObject() == InObjectPool)
-			return ObjectPool.Key;
+		if (ObjectPool.GetDefaultObject() == InObjectPool)
+			return ObjectPool.GetDefaultObject()->GetPoolName().ToString();
 	}
 
 	return FString("Null");
@@ -62,8 +62,8 @@ TSubclassOf<AObjectPoolBase> AObjectPoolManager::GetPoolClass(AObjectPoolBase* I
 {
 	for (const auto ObjectPool : ObjectPools)
 	{
-		if (ObjectPool.Value.GetDefaultObject() == InObjectPool)
-			return ObjectPool.Value->GetClass();
+		if (ObjectPool.GetDefaultObject() == InObjectPool)
+			return ObjectPool;
 	}
 
 	return nullptr;
@@ -73,8 +73,8 @@ TSubclassOf<AObjectPoolBase> AObjectPoolManager::GetPoolClassFromString(const FS
 {
 	for (auto ObjectPool : ObjectPools)
 	{
-		if (ObjectPool.Key == InPoolName)
-			return ObjectPool.Value->GetClass();
+		if (ObjectPool.GetDefaultObject()->GetPoolName().ToString() == InPoolName)
+			return ObjectPool;
 	}
 
 	return nullptr;
