@@ -4,8 +4,6 @@
 
 #include "ObjectPooler/ObjectPoolBase.h"
 
-#include "Engine/Engine.h"
-
 #include "Engine/Public/TimerManager.h"
 
 APooledActor::APooledActor()
