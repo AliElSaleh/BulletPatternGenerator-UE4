@@ -55,6 +55,8 @@ protected:
 	void BeginPlay() override;
 	void Destroyed() override;
 
+	virtual void OnLifeSpanExpired();
+
 	// Native implementation of 'PooledActor_BeginPlay' event
 	virtual void PooledActor_BeginPlay_Implementation();
 
@@ -92,7 +94,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pooled Actor")
 		uint8 bInUse : 1;
 
+	// The maximum amount of time this pooled actor is allowed to live outside the pool. (A value of 0.0 = Forever)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pooled Actor")
+		float MaxLifespan = 0.0f;
+
+	// The amount of time elapsed since getting out of the pool
+	UPROPERTY(BlueprintReadOnly, Category = "Pooled Actor")
+		float ElapsedTime = 0.0f;
+
 	// The pool that owns this actor
 	UPROPERTY(BlueprintReadOnly, Category = "Pooled Actor")
 		class AObjectPoolBase* PoolOwner;
+
+private:
+	FTimerHandle TH_LifeSpan;
 };

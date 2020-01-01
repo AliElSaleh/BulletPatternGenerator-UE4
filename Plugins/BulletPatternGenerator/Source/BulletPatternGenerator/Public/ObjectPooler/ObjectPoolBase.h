@@ -20,10 +20,10 @@ public:
 	 * @return An actor reference from the pool. Null if all actors from the pool are in use
 	 */
 	UFUNCTION(BlueprintPure, Category = "Object Pool")
-		class APooledActor* GetActorFromPool();
+		virtual class APooledActor* GetActorFromPool();
 	
 	/**
-	 * Removes an actor from the pool. ONLY USE SPARINGLY. Call 'MarkNotInUse' from the pooled actor to return it to the pool.
+	 * Removes an actor from the pool. ONLY USE SPARINGLY. Call 'PooledActor_EndPlay' from the pooled actor to return it to the pool.
 	 * Alternatively, call 'MarkActorNotInUse' from an object pool.
 	 *
 	 * @param InPooledActor	 The pooled actor to remove from the pool

@@ -6,6 +6,8 @@
 
 #include "Engine/Engine.h"
 
+#include "Engine/Public/TimerManager.h"
+
 APooledActor::APooledActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -34,6 +36,11 @@ void APooledActor::Destroyed()
 		PoolOwner->RemoveActorFromPool(this);
 }
 
+void APooledActor::OnLifeSpanExpired()
+{
+	PooledActor_EndPlay();
+}
+
 void APooledActor::PooledActor_BeginPlay_Implementation()
 {
 	MarkInUse();
@@ -47,6 +54,9 @@ void APooledActor::PooledActor_EndPlay_Implementation()
 
 void APooledActor::MarkInUse()
 {
+	if (MaxLifespan > 0.0f)
+		GetWorldTimerManager().SetTimer(TH_LifeSpan, this, &APooledActor::OnLifeSpanExpired, MaxLifespan);
+
 	SetActive(true);
 
 	CustomTimeDilation = 1.0f;
@@ -56,6 +66,8 @@ void APooledActor::MarkInUse()
 
 void APooledActor::MarkNotInUse()
 {
+	GetWorldTimerManager().ClearTimer(TH_LifeSpan);
+
 	SetActive(false);
 
 	CustomTimeDilation = 0.0f;

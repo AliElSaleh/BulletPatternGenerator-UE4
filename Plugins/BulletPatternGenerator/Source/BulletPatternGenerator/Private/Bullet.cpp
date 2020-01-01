@@ -6,7 +6,7 @@
 
 #include "GameFramework/ProjectileMovementComponent.h"
 
-#include "BulletPattern.h"
+#include "BulletPatternBase.h"
 
 #include "Engine/StaticMesh.h"
 
@@ -53,15 +53,18 @@ void ABullet::BeginPlay()
 	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlap);
 }
 
-void ABullet::SetupBehaviour_Implementation(class UBulletPattern* BulletPattern)
+void ABullet::SetupBehaviour_Implementation(class UBulletPatternBase* BulletPattern, const FVector InDirection, const float InSpeed)
 {
 	if (!BulletPattern)
 		return;
+
+	Direction = InDirection;
+	Speed = InSpeed;
 	
 	ProjectileMovementComponent->Velocity = Direction * Speed;
 }
 
-void ABullet::OnOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABullet::OnOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, const int32 OtherBodyIndex, const bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->IsA(StaticClass()))
 	{

@@ -21,8 +21,8 @@ public:
 		FOnBulletHitSignature OnBulletHit;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Bullet Properties")
-		void SetupBehaviour(class UBulletPattern* BulletPattern);
-		void SetupBehaviour_Implementation(class UBulletPattern* BulletPattern);
+		void SetupBehaviour(class UBulletPatternBase* BulletPattern, FVector InDirection, float InSpeed);
+		void SetupBehaviour_Implementation(class UBulletPatternBase* BulletPattern, FVector InDirection, float InSpeed);
 
 protected:
 	void BeginPlay() override;
@@ -39,7 +39,7 @@ protected:
 		void OnOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// The normalized direction vector of the bullet (in other words, the direction it's heading in)
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Bullet Properties")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet Properties")
 		FVector Direction = FVector(0.0f);
 
 	// The acceleration of the bullet
@@ -47,16 +47,12 @@ protected:
 		FVector Acceleration = FVector(0.0f);
 	
 	// The speed of the bullet
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Properties", meta = (ClampMin = 0.0f))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet Properties", meta = (ClampMin = 0.0f))
 		float Speed = 100.0f;
 
 	// The amount of damage to deal to a damagable actor
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Properties", meta = (ClampMin = 0.0f))
 		float DamageAmount = 0.0f;
-
-	// The amount of time (in seconds) this bullet will stay alive. 0.0 = Unlimited lifetime
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Properties", meta = (ClampMin = 0.0f))
-		float MaxLifetime = 0.0f;
 
 private:
 	class UStaticMesh* SM_Bullet;
