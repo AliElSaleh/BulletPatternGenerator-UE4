@@ -54,9 +54,6 @@ void APooledActor::PooledActor_EndPlay_Implementation()
 
 void APooledActor::MarkInUse()
 {
-	if (MaxLifespan > 0.0f)
-		GetWorldTimerManager().SetTimer(TH_LifeSpan, this, &APooledActor::OnLifeSpanExpired, MaxLifespan);
-
 	SetActive(true);
 
 	CustomTimeDilation = 1.0f;
@@ -66,8 +63,6 @@ void APooledActor::MarkInUse()
 
 void APooledActor::MarkNotInUse()
 {
-	GetWorldTimerManager().ClearTimer(TH_LifeSpan);
-
 	SetActive(false);
 
 	CustomTimeDilation = 0.0f;
@@ -89,6 +84,9 @@ void APooledActor::SetActive(const bool bActive)
 		SetActorEnableCollision(bEverAllowCollisions);
 
 		ActivateAllComponents();
+
+		if (MaxLifespan > 0.0f)
+			GetWorldTimerManager().SetTimer(TH_LifeSpan, this, &APooledActor::OnLifeSpanExpired, MaxLifespan);
 	}
 	else
 	{
@@ -102,6 +100,8 @@ void APooledActor::SetActive(const bool bActive)
 		SetActorEnableCollision(false);
 
 		DeactivateAllComponents();
+
+		GetWorldTimerManager().ClearTimer(TH_LifeSpan);
 	}
 }
 
