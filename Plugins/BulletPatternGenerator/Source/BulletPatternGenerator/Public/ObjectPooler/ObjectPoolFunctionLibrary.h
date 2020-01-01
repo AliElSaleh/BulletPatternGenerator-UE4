@@ -17,4 +17,7 @@ class BULLETPATTERNGENERATOR_API UObjectPoolFunctionLibrary : public UBlueprintF
 public:
 	UFUNCTION(BlueprintPure, Category = "Object Pooler")
 		static class AObjectPoolBase* GetObjectPool(const UObject* WorldContextObject, FName PoolName);
+
+	UFUNCTION(BlueprintPure, Category = "Object Pooler")
+		static TArray<class AObjectPoolBase*> GetAllObjectPools(const UObject* WorldContextObject);
 };
