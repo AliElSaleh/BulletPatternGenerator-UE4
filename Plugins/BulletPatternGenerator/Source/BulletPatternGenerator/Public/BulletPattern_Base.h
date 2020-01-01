@@ -7,23 +7,25 @@
 #include "BulletPattern_Base.generated.h"
 
 /**
- * This class is a base class for all bullet pattern types.
+ * The base class for all bullet pattern types.
  */
 UCLASS(BlueprintType, Blueprintable)
 class BULLETPATTERNGENERATOR_API UBulletPattern_Base : public UObject
 {
 	GENERATED_BODY()
 
+public:
+	virtual void BeginPlay();
+	virtual void Tick(float DeltaTime);
+
 protected:
 	// Event when play begins for this bullet pattern class
-	UFUNCTION(BlueprintNativeEvent, Category = "Bullet Pattern")
-		void BeginPlay();
-		virtual void BeginPlay_Implementation();
+	UFUNCTION(BlueprintImplementableEvent, DisplayName = "Begin Play", Category = "Bullet Pattern")
+		void ReceiveBeginPlay();
 
 	// Event called every frame, if ticking is enabled
-	UFUNCTION(BlueprintNativeEvent, Category = "Bullet Pattern")
-		void Tick(float DeltaTime);
-		virtual void Tick_Implementation(float DeltaTime);
+	UFUNCTION(BlueprintImplementableEvent, DisplayName = "Tick", Category = "Bullet Pattern")
+		void ReceiveTick(float DeltaTime);
 
 	// The speed of each bullet
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pattern Settings", meta = (ClampMin = 1.0f))
