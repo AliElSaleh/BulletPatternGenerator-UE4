@@ -10,6 +10,7 @@ AObjectPoolManager::AObjectPoolManager()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.SetTickFunctionEnable(false); 
 
 	bFindCameraComponentWhenViewTarget = false;
 	bCanBeDamaged = false;

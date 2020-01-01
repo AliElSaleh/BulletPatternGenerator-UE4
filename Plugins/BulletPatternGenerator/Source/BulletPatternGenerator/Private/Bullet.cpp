@@ -15,6 +15,7 @@ ABullet::ABullet()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.SetTickFunctionEnable(false); 
 
 	bEverAllowTick = false;
 	bEverAllowCollisions = true;
