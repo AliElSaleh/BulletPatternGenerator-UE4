@@ -9,7 +9,7 @@
 /**
  * High-level manager class for all object pools in the world
  */
-UCLASS(NotBlueprintable, HideCategories=("Actor", "LOD", "Cooking"))
+UCLASS(NotBlueprintable, HideCategories=("Actor", "LOD", "Cooking", "Replication"))
 class BULLETPATTERNGENERATOR_API AObjectPoolManager final : public AInfo
 {
 	GENERATED_BODY()
