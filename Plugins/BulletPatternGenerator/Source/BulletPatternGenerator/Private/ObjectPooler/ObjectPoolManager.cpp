@@ -8,7 +8,11 @@
 
 AObjectPoolManager::AObjectPoolManager()
 {
+	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+
 	bFindCameraComponentWhenViewTarget = false;
+	bCanBeDamaged = false;
 }
 
 void AObjectPoolManager::BeginPlay()
@@ -31,7 +35,7 @@ void AObjectPoolManager::SpawnAllObjectPools()
 
 void AObjectPoolManager::SpawnObjectPool(const TSubclassOf<AObjectPoolBase> InPoolClass) const
 {
-	check(InPoolClass);
+	check(InPoolClass && "A crash occured because a pool class is null. Check the ObjectPoolManager actor in the world and make sure that there are no empty properties in the object pool array.");
 
 	World->SpawnActor(InPoolClass, &Location, &Rotation);
 }
