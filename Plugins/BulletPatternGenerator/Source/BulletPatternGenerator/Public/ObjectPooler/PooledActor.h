@@ -98,7 +98,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pooled Actor")
 		float MaxLifespan = 0.0f;
 
-	// The amount of time elapsed since getting out of the pool
+	// The amount of time elapsed since the 'PooledActor_BeginPlay' event
 	UPROPERTY(BlueprintReadOnly, Category = "Pooled Actor")
 		float ElapsedTime = 0.0f;
 
