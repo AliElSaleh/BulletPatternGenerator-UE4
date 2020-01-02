@@ -6,6 +6,8 @@
 
 #include "Engine/World.h"
 
+//#include "DrawDebugHelpers.h"
+
 UBulletPattern_Base::UBulletPattern_Base()
 {
 }
@@ -25,16 +27,16 @@ void UBulletPattern_Base::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UBulletPattern_Base::Tick(const float DeltaTime)
 {
-	ElapsedTime += DeltaTime;
+	//ElapsedTime += DeltaTime * SpinSpeed/2.0f;
+	//
+	//FRotator NewRotation = BulletPatternSpawner->GetActorRotation();
+	//const float DeltaRotation = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * AngleSpread;
+	//NewRotation.Yaw += DeltaRotation;
+	//
+	//BulletPatternSpawner->SetActorRotation(NewRotation);
+	//BulletDirection = NewRotation.Vector().GetSafeNormal();
 
-	//SpinSpeed = 0.0f;
-    FRotator NewRotation = BulletPatternSpawner->GetActorRotation();
-    float DeltaRotation = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * 50.0f;    //Rotate by 20 degrees per second
-    NewRotation.Yaw += DeltaRotation;
-	BulletPatternSpawner->SetActorRotation(NewRotation);
-	BulletDirection = NewRotation.Vector().GetSafeNormal();
-
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *BulletDirection.ToString())
+	//DrawDebugLine(BulletPatternSpawner->GetWorld(), BulletPatternSpawner->GetActorLocation(), BulletPatternSpawner->GetActorLocation() + BulletDirection * 200.0f, FColor::Red, false, -1.0f, 0, 2.0f);
 
 	ReceiveTick(DeltaTime);
 }

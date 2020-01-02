@@ -59,7 +59,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
 		FName PatternName = "Default Pattern";
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
+	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern | Settings")
 		FVector BulletDirection;
 
 	// The speed of each bullet

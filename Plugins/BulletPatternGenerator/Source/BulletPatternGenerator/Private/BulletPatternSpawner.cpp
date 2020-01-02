@@ -106,18 +106,16 @@ void ABulletPatternSpawner::SpawnBullet(UBulletPattern_Base* BulletPattern, cons
 
 void ABulletPatternSpawner::StartBulletPattern(UBulletPattern_Base* BulletPattern)
 {
-	ResumeBulletPattern();
-
 	if (!BulletPattern)
 		return;
 
 	ActiveBulletPattern = BulletPattern;
-	RotatingMovementComponent->RotationRate = FRotator(0.0f, ActiveBulletPattern->GetSpinSpeed(), 0.0f);
+	//RotatingMovementComponent->RotationRate = FRotator(0.0f, ActiveBulletPattern->GetSpinSpeed(), 0.0f);
 
 	ActiveBulletPattern->AssignSpawner(this);
 	ActiveBulletPattern->BeginPlay();
 
-	bHasStarted = true;
+	ResumeBulletPattern();
 }
 
 void ABulletPatternSpawner::ResumeBulletPattern()
