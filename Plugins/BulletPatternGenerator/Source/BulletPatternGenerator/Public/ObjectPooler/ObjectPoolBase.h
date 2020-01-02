@@ -57,6 +57,18 @@ protected:
 	 */
 	virtual class APooledActor* SpawnPooledObject();
 
+	/**
+	 * Fills up the pool with actors, specified by the PoolSize (Spawns actors and adds them to the pool)
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Object Pool")
+		void FillPool();
+
+	/**
+	 * Empties the pool (Destroying all actors in the pool)
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Object Pool")
+		void EmptyPool();
+
 	// The name of the pool
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pool Settings")
 		FName PoolName = "Default";
@@ -72,10 +84,6 @@ protected:
 	// References to the pooled actors
 	UPROPERTY(BlueprintReadOnly, Category = "Object Pool")
 		TArray<class APooledActor*> PooledActors;
-
-	// References to the pooled actors
-	UPROPERTY(BlueprintReadOnly, Category = "Object Pool")
-		TArray<class APooledActor*> PooledActorsInUse;
 
 private:
 	FVector CurrentLocation;

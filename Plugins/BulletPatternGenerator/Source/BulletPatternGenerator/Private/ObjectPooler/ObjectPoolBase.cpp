@@ -11,6 +11,7 @@ AObjectPoolBase::AObjectPoolBase()
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 	PrimaryActorTick.bAllowTickOnDedicatedServer = false;
+	PrimaryActorTick.SetTickFunctionEnable(false);
 
 	bBlockInput = true;
 
@@ -27,7 +28,11 @@ void AObjectPoolBase::BeginPlay()
 	CurrentLocation = GetActorLocation();
 	CurrentRotation = GetActorRotation();
 
-	// Fill up the pool
+	FillPool();
+}
+
+void AObjectPoolBase::FillPool()
+{
 	for (int32 i = 0; i < PoolSize; ++i)
 	{
 		APooledActor* SpawnedActor = SpawnPooledObject();
@@ -38,6 +43,21 @@ void AObjectPoolBase::BeginPlay()
 		// Place actor in the pool
 		PooledActors.Add(SpawnedActor);
 	}
+}
+
+APooledActor* AObjectPoolBase::SpawnPooledObject()
+{
+	return World->SpawnActor<APooledActor>(ObjectClassToPool, CurrentLocation, CurrentRotation);
+}
+
+void AObjectPoolBase::EmptyPool()
+{
+	PooledActors.Empty();
+}
+
+void AObjectPoolBase::RemoveActorFromPool(APooledActor* InPooledActor)
+{
+	PooledActors.Remove(InPooledActor);
 }
 
 APooledActor* AObjectPoolBase::GetActorFromPool()
@@ -53,11 +73,6 @@ APooledActor* AObjectPoolBase::GetActorFromPool()
 	return nullptr;
 }
 
-void AObjectPoolBase::RemoveActorFromPool(APooledActor* InPooledActor)
-{
-	PooledActors.Remove(InPooledActor);
-}
-
 FName AObjectPoolBase::GetPoolName() const
 {
 	return PoolName;
@@ -66,9 +81,4 @@ FName AObjectPoolBase::GetPoolName() const
 int32 AObjectPoolBase::GetPoolSize() const
 {
 	return PoolSize;
-}
-
-APooledActor* AObjectPoolBase::SpawnPooledObject()
-{
-	return World->SpawnActor<APooledActor>(ObjectClassToPool, CurrentLocation, CurrentRotation);
 }
