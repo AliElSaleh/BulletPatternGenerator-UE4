@@ -18,9 +18,12 @@ class BULLETPATTERNGENERATOR_API UBulletPattern_Base : public UObject
 public:
 	UBulletPattern_Base();
 
+	void AssignSpawner(class ABulletPatternSpawner* NewSpawner);
+
 	virtual void BeginPlay();
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason);
 	virtual void Tick(float DeltaTime);
+	virtual void UpdatePattern(float DeltaTime);
 
 	// Retrieves the speed that the bullets are using from this pattern
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
@@ -47,10 +50,17 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, DisplayName = "Tick", Category = "Bullet Pattern")
 		void ReceiveTick(float DeltaTime);
 
+	// Event called every 'fire-rate' seconds, if ticking is enabled
+	UFUNCTION(BlueprintImplementableEvent, DisplayName = "Update Pattern", Category = "Bullet Pattern")
+		void ReceiveUpdatePattern(float DeltaTime);
+
 	void ResetAllProperties();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
 		FName PatternName = "Default Pattern";
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
+		FVector BulletDirection;
 
 	// The speed of each bullet
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings", meta = (ClampMin = 1.0f))
@@ -63,4 +73,9 @@ protected:
 	// The speed of the 'spinning' effect
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings", meta = (ClampMin = 0.0f))
 		float SpinSpeed = 1.0f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
+		class ABulletPatternSpawner* BulletPatternSpawner;
+
+	float ElapsedTime = 0.0f;
 };

@@ -63,8 +63,6 @@ void ABulletPatternSpawner::BeginPlay()
 	check(ActiveBulletPattern && "Reference is null. Please make sure that the 'Active Bullet Pattern' property is not null.")
 #endif
 
-	ActiveBulletPattern->BeginPlay();
-
 	StartBulletPattern(ActiveBulletPattern);
 }
 
@@ -72,6 +70,9 @@ void ABulletPatternSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
+	if (!bHasStarted)
+		return;
+	
 	ActiveBulletPattern->EndPlay(EndPlayReason);
 }
 
@@ -79,50 +80,69 @@ void ABulletPatternSpawner::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!bHasStarted)
+		return;
+
 	ElapsedTime += DeltaTime;
+	ActiveBulletPattern->Tick(DeltaTime);
 
 	if (ElapsedTime > ActiveBulletPattern->GetFireRate())
 	{
-		ActiveBulletPattern->Tick(ActiveBulletPattern->GetFireRate());
-		SpawnBullet();
 		ElapsedTime = 0.0f;
+
+		ActiveBulletPattern->UpdatePattern(ActiveBulletPattern->GetFireRate());
 	}
 }
 
-void ABulletPatternSpawner::SpawnBullet()
+void ABulletPatternSpawner::SpawnBullet(UBulletPattern_Base* BulletPattern, const FVector& Direction, const float Speed)
 {
 	ABullet* Bullet = Cast<ABullet>(ActiveBulletPool->GetActorFromPool());
+
 	Bullet->SetActorLocation(GetActorLocation());
-	Bullet->SetupBehaviour(ActiveBulletPattern, GetActorForwardVector(), ActiveBulletPattern->GetBulletSpeed());
+	Bullet->SetupBehaviour(BulletPattern, Direction, Speed);
 
 	Bullet->PooledActor_BeginPlay();
 }
 
 void ABulletPatternSpawner::StartBulletPattern(UBulletPattern_Base* BulletPattern)
 {
+	ResumeBulletPattern();
+
 	if (!BulletPattern)
 		return;
-	
+
 	ActiveBulletPattern = BulletPattern;
 	RotatingMovementComponent->RotationRate = FRotator(0.0f, ActiveBulletPattern->GetSpinSpeed(), 0.0f);
 
-	ElapsedTime = 0.0f;
+	ActiveBulletPattern->AssignSpawner(this);
+	ActiveBulletPattern->BeginPlay();
+
+	bHasStarted = true;
+}
+
+void ABulletPatternSpawner::ResumeBulletPattern()
+{
 	SetActorTickEnabled(true);
+	ElapsedTime = 0.0f;
+
+	bHasStarted = true;
 }
 
 void ABulletPatternSpawner::StopBulletPattern()
 {
 	SetActorTickEnabled(false);
 	ElapsedTime = 0.0f;
+	
+	bHasStarted = false;
 }
 
 void ABulletPatternSpawner::ChangeBulletPattern(const TSubclassOf<UBulletPattern_Base> NewBulletPattern)
 {
 	StopBulletPattern();
 
-	ActiveBulletPattern = NewBulletPattern.GetDefaultObject();
+	//ActiveBulletPattern->EndPlay(EEndPlayReason::Destroyed);
 
-	StartBulletPattern(ActiveBulletPattern);
+	StartBulletPattern(NewBulletPattern.GetDefaultObject());
 }
 
 void ABulletPatternSpawner::ChangeObjectPool(const TSubclassOf<AObjectPoolBase> NewObjectPool)

@@ -14,17 +14,15 @@ class BULLETPATTERNGENERATOR_API ABulletPatternSpawner : public AActor
 public:	
 	ABulletPatternSpawner();
 
-protected:
-	void BeginPlay() override;
-	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void Tick(float DeltaTime) override;
-
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
-		void SpawnBullet();
-	
+		void SpawnBullet(class UBulletPattern_Base* BulletPattern, const FVector& Direction, const float Speed);
+
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
 		void StartBulletPattern(class UBulletPattern_Base* BulletPattern);
 
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
+		void ResumeBulletPattern();
+	
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
 		void StopBulletPattern();
 
@@ -33,6 +31,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
 		void ChangeObjectPool(TSubclassOf<class AObjectPoolBase> NewObjectPool);
+
+protected:
+	void BeginPlay() override;
+	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	void Tick(float DeltaTime) override;
 	
 	// A list of all bullet patterns that this spawner can use
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, DisplayName = "Bullet Patterns", Category = "Bullet Pattern Spawner|Settings")
@@ -45,6 +48,9 @@ protected:
 	// The active bullet pattern script
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Settings")
 		TSubclassOf<class AObjectPoolBase> ObjectPoolToUse;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Status")
+		uint8 bHasStarted : 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Components")
 		class UStaticMeshComponent* StaticMeshComponent;

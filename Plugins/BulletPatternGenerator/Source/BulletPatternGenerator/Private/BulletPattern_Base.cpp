@@ -2,6 +2,8 @@
 
 #include "BulletPattern_Base.h"
 
+#include "BulletPatternSpawner.h"
+
 #include "Engine/World.h"
 
 UBulletPattern_Base::UBulletPattern_Base()
@@ -10,7 +12,7 @@ UBulletPattern_Base::UBulletPattern_Base()
 
 void UBulletPattern_Base::BeginPlay()
 {
-
+	
 	ReceiveBeginPlay();
 }
 
@@ -23,8 +25,30 @@ void UBulletPattern_Base::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UBulletPattern_Base::Tick(const float DeltaTime)
 {
+	ElapsedTime += DeltaTime;
+
+	//SpinSpeed = 0.0f;
+    FRotator NewRotation = BulletPatternSpawner->GetActorRotation();
+    float DeltaRotation = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * 50.0f;    //Rotate by 20 degrees per second
+    NewRotation.Yaw += DeltaRotation;
+	BulletPatternSpawner->SetActorRotation(NewRotation);
+	BulletDirection = NewRotation.Vector().GetSafeNormal();
+
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *BulletDirection.ToString())
 
 	ReceiveTick(DeltaTime);
+}
+
+void UBulletPattern_Base::UpdatePattern(const float DeltaTime)
+{
+	BulletPatternSpawner->SpawnBullet(this, BulletDirection, BulletSpeed);
+
+	ReceiveUpdatePattern(DeltaTime);
+}
+
+void UBulletPattern_Base::AssignSpawner(ABulletPatternSpawner* NewSpawner)
+{
+	BulletPatternSpawner = NewSpawner;
 }
 
 void UBulletPattern_Base::ResetAllProperties()
