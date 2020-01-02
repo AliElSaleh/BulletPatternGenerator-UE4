@@ -54,10 +54,10 @@ void ABullet::BeginPlay()
 	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlap);
 }
 
-void ABullet::SetupBehaviour_Implementation(class UBulletPatternBase* BulletPattern, const FVector InDirection, const float InSpeed)
+void ABullet::SetupBehaviour(class UBulletPattern_Base* BulletPattern, const FVector InDirection, const float InSpeed)
 {
-	if (!BulletPattern)
-		return;
+	//if (!BulletPattern)
+	//	return;
 
 	Direction = InDirection;
 	Speed = InSpeed;

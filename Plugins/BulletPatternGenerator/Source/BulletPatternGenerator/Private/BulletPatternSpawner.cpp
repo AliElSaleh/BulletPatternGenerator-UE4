@@ -3,15 +3,19 @@
 #include "BulletPatternSpawner.h"
 
 #include "BulletPattern_Base.h"
+#include "Bullet.h"
 
 #include "GameFramework/RotatingMovementComponent.h"
+
+#include "ObjectPooler/ObjectPoolFunctionLibrary.h"
+#include "ObjectPooler/ObjectPoolBase.h"
 
 #include "Engine/StaticMesh.h"
 
 ABulletPatternSpawner::ABulletPatternSpawner()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 
 	bCanBeDamaged = false;
 	bFindCameraComponentWhenViewTarget = false;
@@ -41,21 +45,34 @@ void ABulletPatternSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ActiveBulletPattern = BulletPatternClasses[0].GetDefaultObject();
-
-	if (ActiveBulletPattern)
+	if (ObjectPoolToUse)
 	{
-		//PrimaryActorTick.TickInterval = ActiveBulletPattern->GetFireRate();
-		ActiveBulletPattern->BeginPlay();
+		ActiveBulletPool = UObjectPoolFunctionLibrary::GetObjectPool(this, ObjectPoolToUse.GetDefaultObject()->GetPoolName());
 	}
+	else
+	{
+		TArray<AObjectPoolBase*> ObjectPools = UObjectPoolFunctionLibrary::GetAllObjectPools(this);
+
+		if (ObjectPools.Num() > 0 && ObjectPools[0])
+			ActiveBulletPool = ObjectPools[0];
+	}
+
+	ActiveBulletPattern = ActiveBulletPatternClass.GetDefaultObject();
+
+#if !UE_BUILD_SHIPPING
+	check(ActiveBulletPattern && "Reference is null. Please make sure that the 'Active Bullet Pattern' property is not null.")
+#endif
+
+	ActiveBulletPattern->BeginPlay();
+
+	StartBulletPattern(ActiveBulletPattern);
 }
 
 void ABulletPatternSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (ActiveBulletPattern)
-		ActiveBulletPattern->EndPlay(EndPlayReason);
+	ActiveBulletPattern->EndPlay(EndPlayReason);
 }
 
 void ABulletPatternSpawner::Tick(const float DeltaTime)
@@ -64,12 +81,56 @@ void ABulletPatternSpawner::Tick(const float DeltaTime)
 
 	ElapsedTime += DeltaTime;
 
-	if (ActiveBulletPattern)
+	if (ElapsedTime > ActiveBulletPattern->GetFireRate())
 	{
-		if (ElapsedTime > ActiveBulletPattern->GetFireRate())
-		{
-			ActiveBulletPattern->Tick(ActiveBulletPattern->GetFireRate());
-			ElapsedTime = 0.0f;
-		}
+		ActiveBulletPattern->Tick(ActiveBulletPattern->GetFireRate());
+		SpawnBullet();
+		ElapsedTime = 0.0f;
+	}
+}
+
+void ABulletPatternSpawner::SpawnBullet()
+{
+	ABullet* Bullet = Cast<ABullet>(ActiveBulletPool->GetActorFromPool());
+	Bullet->SetActorLocation(GetActorLocation());
+	Bullet->SetupBehaviour(ActiveBulletPattern, GetActorForwardVector(), ActiveBulletPattern->GetBulletSpeed());
+
+	Bullet->PooledActor_BeginPlay();
+}
+
+void ABulletPatternSpawner::StartBulletPattern(UBulletPattern_Base* BulletPattern)
+{
+	if (!BulletPattern)
+		return;
+	
+	ActiveBulletPattern = BulletPattern;
+	RotatingMovementComponent->RotationRate = FRotator(0.0f, ActiveBulletPattern->GetSpinSpeed(), 0.0f);
+
+	ElapsedTime = 0.0f;
+	SetActorTickEnabled(true);
+}
+
+void ABulletPatternSpawner::StopBulletPattern()
+{
+	SetActorTickEnabled(false);
+	ElapsedTime = 0.0f;
+}
+
+void ABulletPatternSpawner::ChangeBulletPattern(const TSubclassOf<UBulletPattern_Base> NewBulletPattern)
+{
+	StopBulletPattern();
+
+	ActiveBulletPattern = NewBulletPattern.GetDefaultObject();
+
+	StartBulletPattern(ActiveBulletPattern);
+}
+
+void ABulletPatternSpawner::ChangeObjectPool(const TSubclassOf<AObjectPoolBase> NewObjectPool)
+{
+	if (NewObjectPool.GetDefaultObject())
+	{
+		ObjectPoolToUse = NewObjectPool;
+		
+		ActiveBulletPool = UObjectPoolFunctionLibrary::GetObjectPool(this, ObjectPoolToUse.GetDefaultObject()->GetPoolName());
 	}
 }

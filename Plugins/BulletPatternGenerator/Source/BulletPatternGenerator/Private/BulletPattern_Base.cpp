@@ -60,8 +60,8 @@ void UBulletPattern_Base::ResetAllProperties()
 				!Prop->IsA<UDelegateProperty>() && 
 				!Prop->IsA<UMulticastDelegateProperty>())
 			{
-				Prop->CopyCompleteValue_InContainer(this, Default);
-				//Prop->ClearValue_InContainer(this);
+				//Prop->CopyCompleteValue_InContainer(this, Default);
+				Prop->ClearValue_InContainer(this);
 				UE_LOG(LogTemp, Warning, TEXT("%s"), *It->GetName())
 			}
 		}

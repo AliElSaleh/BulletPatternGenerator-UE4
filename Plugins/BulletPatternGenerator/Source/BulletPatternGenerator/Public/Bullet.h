@@ -19,10 +19,9 @@ public:
 	// Broadcasted when this bullet actor has overlapped with another object
 	UPROPERTY(BlueprintAssignable, Category = "Bullet|Events")
 		FOnBulletHitSignature OnBulletHit;
-	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Bullet Properties")
-		void SetupBehaviour(class UBulletPatternBase* BulletPattern, FVector InDirection, float InSpeed);
-		void SetupBehaviour_Implementation(class UBulletPatternBase* BulletPattern, FVector InDirection, float InSpeed);
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet")
+		void SetupBehaviour(class UBulletPattern_Base* BulletPattern, FVector InDirection, float InSpeed);
 
 protected:
 	void BeginPlay() override;

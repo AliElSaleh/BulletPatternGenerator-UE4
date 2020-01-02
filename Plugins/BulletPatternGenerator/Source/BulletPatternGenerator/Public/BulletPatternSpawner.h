@@ -19,9 +19,32 @@ protected:
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void Tick(float DeltaTime) override;
 
-	// The active bullet pattern script
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
+		void SpawnBullet();
+	
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
+		void StartBulletPattern(class UBulletPattern_Base* BulletPattern);
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
+		void StopBulletPattern();
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
+		void ChangeBulletPattern(TSubclassOf<class UBulletPattern_Base> NewBulletPattern);
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
+		void ChangeObjectPool(TSubclassOf<class AObjectPoolBase> NewObjectPool);
+	
+	// A list of all bullet patterns that this spawner can use
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, DisplayName = "Bullet Patterns", Category = "Bullet Pattern Spawner|Settings")
 		TArray<TSubclassOf<class UBulletPattern_Base>> BulletPatternClasses;
+
+	// The active bullet pattern script
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, DisplayName = "Active Bullet Pattern", Category = "Bullet Pattern Spawner|Settings")
+		TSubclassOf<class UBulletPattern_Base> ActiveBulletPatternClass;
+
+	// The active bullet pattern script
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Settings")
+		TSubclassOf<class AObjectPoolBase> ObjectPoolToUse;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Components")
 		class UStaticMeshComponent* StaticMeshComponent;
@@ -30,8 +53,8 @@ protected:
 		class URotatingMovementComponent* RotatingMovementComponent;
 	
 private:
-	UPROPERTY()
-		class UBulletPattern_Base* ActiveBulletPattern;
+	class AObjectPoolBase* ActiveBulletPool;
+	class UBulletPattern_Base* ActiveBulletPattern;
 
 	float ElapsedTime = 0.0f;
 };
