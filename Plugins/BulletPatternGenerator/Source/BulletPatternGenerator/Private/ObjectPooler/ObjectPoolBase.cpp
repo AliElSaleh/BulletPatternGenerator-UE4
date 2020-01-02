@@ -33,7 +33,8 @@ void AObjectPoolBase::BeginPlay()
 		APooledActor* SpawnedActor = SpawnPooledObject();
 
 		SpawnedActor->AssignToPool(this);
-
+		SpawnedActor->MarkNotInUse();
+		
 		// Place actor in the pool
 		PooledActors.Add(SpawnedActor);
 	}
@@ -44,9 +45,11 @@ APooledActor* AObjectPoolBase::GetActorFromPool()
 	for (auto Actor : PooledActors)
 	{
 		if (!Actor->IsInUse())
+		{
 			return Actor;
+		}
 	}
-
+	
 	return nullptr;
 }
 

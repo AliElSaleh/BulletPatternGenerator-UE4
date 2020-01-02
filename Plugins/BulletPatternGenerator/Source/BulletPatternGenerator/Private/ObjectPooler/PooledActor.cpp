@@ -24,8 +24,6 @@ void APooledActor::BeginPlay()
 	Super::BeginPlay();
 
 	Components = GetComponents().Array();
-
-	MarkNotInUse();
 }
 
 void APooledActor::Destroyed()
