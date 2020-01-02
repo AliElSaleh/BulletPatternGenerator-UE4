@@ -53,7 +53,7 @@ public:
 	 * @param InPooledActor	The pooled actor to query
 	 * @returns				True, if pooled actor is in use. Otherwise, false.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Object Pool")
+	UFUNCTION(BlueprintPure, Category = "Object Pool")
 		bool IsActorInUse(class APooledActor* InPooledActor) const;
 
 	/**
@@ -61,7 +61,7 @@ public:
 	 *
 	 * @returns				The pool's name
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Object Pool")
+	UFUNCTION(BlueprintPure, Category = "Object Pool")
 		FName GetPoolName() const;
 
 	/**
@@ -69,7 +69,7 @@ public:
 	 *
 	 * @returns				The pool's size
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Object Pool")
+	UFUNCTION(BlueprintPure, Category = "Object Pool")
 		int32 GetPoolSize() const;
 
 protected:
@@ -97,6 +97,10 @@ protected:
 	// References to the pooled actors
 	UPROPERTY(BlueprintReadOnly, Category = "Object Pool")
 		TArray<class APooledActor*> PooledActors;
+
+	// References to the pooled actors
+	UPROPERTY(BlueprintReadOnly, Category = "Object Pool")
+		TArray<class APooledActor*> PooledActorsInUse;
 
 private:
 	FVector CurrentLocation;
