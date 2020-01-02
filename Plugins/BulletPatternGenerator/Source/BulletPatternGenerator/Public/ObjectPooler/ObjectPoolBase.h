@@ -32,31 +32,6 @@ public:
 		void RemoveActorFromPool(class APooledActor* InPooledActor);
 
 	/**
-	 * Marks the specified pooled actor not in use. Disables tick, hides actor in game, disables collision, deactivates components and sets actor time dilation to 0.0
-	 *
-	 * @param InPooledActor	 The pooled actor to mark not in use
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Object Pool")
-		void MarkActorNotInUse(class APooledActor* InPooledActor) const;
-
-	/**
-	 * Marks the specified pooled actor in use. Enables tick (if specified), shows actor in game, enables collision (if specified), activates components and sets actor time dilation to 1.0
-	 *
-	 * @param InPooledActor	 The pooled actor to mark in use
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Object Pool")
-		void MarkActorInUse(class APooledActor* InPooledActor) const;
-
-	/**
-	 * Tests to see if the specified actor is in use by the pool
-	 *
-	 * @param InPooledActor	The pooled actor to query
-	 * @returns				True, if pooled actor is in use. Otherwise, false.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Object Pool")
-		bool IsActorInUse(class APooledActor* InPooledActor) const;
-
-	/**
 	 * Retrieves the name of the pool
 	 *
 	 * @returns				The pool's name

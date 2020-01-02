@@ -58,21 +58,6 @@ void AObjectPoolBase::RemoveActorFromPool(APooledActor* InPooledActor)
 	PooledActors.Remove(InPooledActor);
 }
 
-void AObjectPoolBase::MarkActorNotInUse(APooledActor* InPooledActor) const
-{
-	InPooledActor->MarkNotInUse();
-}
-
-void AObjectPoolBase::MarkActorInUse(APooledActor* InPooledActor) const
-{
-	InPooledActor->MarkInUse();
-}
-
-bool AObjectPoolBase::IsActorInUse(APooledActor* InPooledActor) const
-{
-	return InPooledActor ? InPooledActor->IsInUse() : false;
-}
-
 FName AObjectPoolBase::GetPoolName() const
 {
 	return PoolName;

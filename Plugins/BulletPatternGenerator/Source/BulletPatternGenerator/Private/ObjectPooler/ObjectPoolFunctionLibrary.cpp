@@ -4,6 +4,8 @@
 
 #include "ObjectPooler/ObjectPoolBase.h"
 
+#include "ObjectPooler/PooledActor.h"
+
 #include "Kismet/GameplayStatics.h"
 
 AObjectPoolBase* UObjectPoolFunctionLibrary::GetObjectPool(const UObject* WorldContextObject, const FName PoolName)
@@ -35,4 +37,19 @@ TArray<AObjectPoolBase*> UObjectPoolFunctionLibrary::GetAllObjectPools(const UOb
 	}
 
 	return FoundObjectPools;
+}
+
+void UObjectPoolFunctionLibrary::MarkActorNotInUse(APooledActor* InPooledActor)
+{
+	InPooledActor->MarkNotInUse();
+}
+
+void UObjectPoolFunctionLibrary::MarkActorInUse(APooledActor* InPooledActor)
+{
+	InPooledActor->MarkInUse();
+}
+
+bool UObjectPoolFunctionLibrary::IsActorInUse(APooledActor* InPooledActor)
+{
+	return InPooledActor ? InPooledActor->IsInUse() : false;
 }
