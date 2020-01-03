@@ -14,7 +14,7 @@ APooledActor::APooledActor()
 	bEverAllowCollisions = true;
 }
 
-void APooledActor::AssignToPool(AObjectPoolBase* InPoolToAssign)
+void APooledActor::AssignToPool(UObjectPoolBase* InPoolToAssign)
 {
 	PoolOwner = InPoolToAssign;
 }

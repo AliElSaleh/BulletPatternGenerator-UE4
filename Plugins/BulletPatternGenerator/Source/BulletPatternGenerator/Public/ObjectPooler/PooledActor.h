@@ -49,7 +49,7 @@ public:
 	 *
 	 * @param InPoolToAssign	The object pool to assign this actor to
 	 */
-	void AssignToPool(class AObjectPoolBase* InPoolToAssign);
+	void AssignToPool(class UObjectPoolBase* InPoolToAssign);
 
 protected:
 	void BeginPlay() override;
@@ -104,7 +104,7 @@ protected:
 
 	// The pool that owns this actor
 	UPROPERTY(BlueprintReadOnly, Category = "Pooled Actor")
-		class AObjectPoolBase* PoolOwner;
+		class UObjectPoolBase* PoolOwner;
 
 private:
 	FTimerHandle TH_LifeSpan;

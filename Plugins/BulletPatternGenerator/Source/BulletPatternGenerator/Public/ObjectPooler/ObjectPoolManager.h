@@ -24,7 +24,7 @@ public:
 	 * @returns				If found, return an object pool actor pointer. Otherwise, null
 	 */
 	UFUNCTION(BlueprintPure, Category = "Object Pool")
-		class AObjectPoolBase* GetPool(FString InPoolName);
+		class UObjectPoolBase* GetPool(FString InPoolName);
 
 	/**
 	 * Retrieves the specified object pool's name via an object pool actor pointer
@@ -33,7 +33,15 @@ public:
 	 * @returns If found, return the object pool's name. Otherwise, return "Not Valid"
 	 */
 	UFUNCTION(BlueprintPure, Category = "Object Pool")
-		FString GetPoolName(class AObjectPoolBase* InObjectPool);
+		FString GetPoolName(class UObjectPoolBase* InObjectPool);
+
+	/**
+	 * Retrieves the name of this object pool manager
+	 *
+	 * @returns The name of this manager object
+	 */
+	UFUNCTION(BlueprintPure, Category = "Object Pool")
+		FName GetManagerName() const { return ManagerName; }
 
 	/**
 	 * Retrieves the specified object pool's class via an object pool actor pointer
@@ -42,7 +50,7 @@ public:
 	 * @returns				If found, return the object pool's class type. Otherwise, return null
 	 */
 	UFUNCTION(BlueprintPure, Category = "Object Pool")
-		TSubclassOf<class AObjectPoolBase> GetPoolClass(class AObjectPoolBase* InObjectPool);
+		TSubclassOf<class UObjectPoolBase> GetPoolClass(class UObjectPoolBase* InObjectPool);
 
 	/**
 	 * Retrieves the specified object pool's class via the specified name
@@ -51,14 +59,18 @@ public:
 	 * @returns				If found, return the object pool's class type. Otherwise, return null
 	 */
 	UFUNCTION(BlueprintPure, Category = "Object Pool")
-		TSubclassOf<class AObjectPoolBase> GetPoolClassFromString(FString InPoolName);
+		TSubclassOf<class UObjectPoolBase> GetPoolClassFromString(FString InPoolName);
 
 protected:
-	void BeginPlay() override;
-
+	void PostInitializeComponents() override;
+	
 	// Spawns all object pools in the 'ObjectPools' list
 	UFUNCTION(BlueprintCallable, Category = "Object Pool")
 		void SpawnAllObjectPools();
+
+	// Destroys all object pools in that were created
+	UFUNCTION(BlueprintCallable, Category = "Object Pool")
+		void DestroyAllObjectPools();
 
 	/**
 	 * Spawns a specific object pool via the specified sub-class
@@ -66,16 +78,13 @@ protected:
 	 * @param InPoolClass	The sub-class of AObjectPoolBase to spawn
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Object Pool")
-		void SpawnObjectPool(TSubclassOf<AObjectPoolBase> InPoolClass) const;
+		void SpawnObjectPool(TSubclassOf<UObjectPoolBase> InPoolClass);
+
+	UPROPERTY(EditInstanceOnly, Category = "Object Pool Settings")
+		FName ManagerName = "Default";
 
 	// The list of object pools to spawn. Assign a name to an object pool to later retrieve it using the name at runtime
 	UPROPERTY(EditInstanceOnly, Category = "Object Pool Settings")
-		TArray<TSubclassOf<class AObjectPoolBase>> ObjectPools;
+		TArray<TSubclassOf<class UObjectPoolBase>> ObjectPools;
 	
-private:
-	FVector Location;
-	FRotator Rotation;
-	
-	// Cached world reference
-	UWorld* World;
 };

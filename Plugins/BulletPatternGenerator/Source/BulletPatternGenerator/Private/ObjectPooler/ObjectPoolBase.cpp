@@ -6,32 +6,18 @@
 
 #include "Engine/World.h"
 
-AObjectPoolBase::AObjectPoolBase()
+UObjectPoolBase::UObjectPoolBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
-	PrimaryActorTick.bStartWithTickEnabled = false;
-	PrimaryActorTick.bAllowTickOnDedicatedServer = false;
-	PrimaryActorTick.SetTickFunctionEnable(false);
-
-	bBlockInput = true;
-
-	bCanBeDamaged = false;
-	bFindCameraComponentWhenViewTarget = false;
 }
 
-void AObjectPoolBase::BeginPlay()
+void UObjectPoolBase::BeginPlay()
 {
-	Super::BeginPlay();
-
 	World = GetWorld();
-
-	CurrentLocation = GetActorLocation();
-	CurrentRotation = GetActorRotation();
 
 	FillPool();
 }
 
-void AObjectPoolBase::FillPool()
+void UObjectPoolBase::FillPool()
 {
 	for (int32 i = 0; i < PoolSize; ++i)
 	{
@@ -45,22 +31,22 @@ void AObjectPoolBase::FillPool()
 	}
 }
 
-APooledActor* AObjectPoolBase::SpawnPooledObject()
+APooledActor* UObjectPoolBase::SpawnPooledObject()
 {
 	return World->SpawnActor<APooledActor>(ObjectClassToPool, CurrentLocation, CurrentRotation);
 }
 
-void AObjectPoolBase::EmptyPool()
+void UObjectPoolBase::EmptyPool()
 {
 	PooledActors.Empty();
 }
 
-void AObjectPoolBase::RemoveActorFromPool(APooledActor* InPooledActor)
+void UObjectPoolBase::RemoveActorFromPool(APooledActor* InPooledActor)
 {
 	PooledActors.Remove(InPooledActor);
 }
 
-APooledActor* AObjectPoolBase::GetActorFromPool()
+APooledActor* UObjectPoolBase::GetActorFromPool()
 {
 	for (auto Actor : PooledActors)
 	{
@@ -73,12 +59,12 @@ APooledActor* AObjectPoolBase::GetActorFromPool()
 	return nullptr;
 }
 
-FName AObjectPoolBase::GetPoolName() const
+FName UObjectPoolBase::GetPoolName() const
 {
 	return PoolName;
 }
 
-int32 AObjectPoolBase::GetPoolSize() const
+int32 UObjectPoolBase::GetPoolSize() const
 {
 	return PoolSize;
 }

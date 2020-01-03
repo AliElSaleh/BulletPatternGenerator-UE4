@@ -4,7 +4,7 @@
 
 #include "ObjectPooler/ObjectPoolBase.h"
 
-#include "Engine/World.h"
+#include "ObjectPoolFunctionLibrary.h"
 
 AObjectPoolManager::AObjectPoolManager()
 {
@@ -16,14 +16,19 @@ AObjectPoolManager::AObjectPoolManager()
 	bCanBeDamaged = false;
 }
 
-void AObjectPoolManager::BeginPlay()
-{
-	World = GetWorld();
+void AObjectPoolManager::PostInitializeComponents()
+{	
+	Super::PostInitializeComponents();
 
-	Location = GetActorLocation();
-	Rotation = GetActorRotation();
-	
+	if (UObjectPoolFunctionLibrary::ObjectPools.Num() > 0)
+		DestroyAllObjectPools();
+
 	SpawnAllObjectPools();
+
+	for (auto ObjectPool : UObjectPoolFunctionLibrary::ObjectPools)
+	{
+		ObjectPool->BeginPlay();
+	}
 }
 
 void AObjectPoolManager::SpawnAllObjectPools()
@@ -34,14 +39,20 @@ void AObjectPoolManager::SpawnAllObjectPools()
 	}
 }
 
-void AObjectPoolManager::SpawnObjectPool(const TSubclassOf<AObjectPoolBase> InPoolClass) const
+void AObjectPoolManager::DestroyAllObjectPools()
 {
-	check(InPoolClass && "A crash occured because a pool class is null. Check the ObjectPoolManager actor in the world and make sure that there are no empty properties in the object pool array.");
-
-	World->SpawnActor(InPoolClass, &Location, &Rotation);
+	UObjectPoolFunctionLibrary::ObjectPools.Empty();
 }
 
-AObjectPoolBase* AObjectPoolManager::GetPool(const FString InPoolName)
+void AObjectPoolManager::SpawnObjectPool(const TSubclassOf<UObjectPoolBase> InPoolClass)
+{
+	//check(InPoolClass && "A crash occured because a pool class is null. Check the ObjectPoolManager actor in the world and make sure that there are no empty properties in the object pool array.");
+
+	if (InPoolClass)
+		UObjectPoolFunctionLibrary::ObjectPools.Add(NewObject<UObjectPoolBase>(this, InPoolClass.Get(), InPoolClass->GetFName(), RF_NoFlags, InPoolClass.GetDefaultObject(), true));
+}
+
+UObjectPoolBase* AObjectPoolManager::GetPool(const FString InPoolName)
 {
 	for (const auto ObjectPool : ObjectPools)
 	{
@@ -52,7 +63,7 @@ AObjectPoolBase* AObjectPoolManager::GetPool(const FString InPoolName)
 	return nullptr;
 }
 
-FString AObjectPoolManager::GetPoolName(AObjectPoolBase* InObjectPool)
+FString AObjectPoolManager::GetPoolName(UObjectPoolBase* InObjectPool)
 {
 	for (const auto ObjectPool : ObjectPools)
 	{
@@ -63,7 +74,7 @@ FString AObjectPoolManager::GetPoolName(AObjectPoolBase* InObjectPool)
 	return FString("Null");
 }
 
-TSubclassOf<AObjectPoolBase> AObjectPoolManager::GetPoolClass(AObjectPoolBase* InObjectPool)
+TSubclassOf<UObjectPoolBase> AObjectPoolManager::GetPoolClass(UObjectPoolBase* InObjectPool)
 {
 	for (const auto ObjectPool : ObjectPools)
 	{
@@ -74,7 +85,7 @@ TSubclassOf<AObjectPoolBase> AObjectPoolManager::GetPoolClass(AObjectPoolBase* I
 	return nullptr;
 }
 
-TSubclassOf<AObjectPoolBase> AObjectPoolManager::GetPoolClassFromString(const FString InPoolName)
+TSubclassOf<UObjectPoolBase> AObjectPoolManager::GetPoolClassFromString(const FString InPoolName)
 {
 	for (auto ObjectPool : ObjectPools)
 	{

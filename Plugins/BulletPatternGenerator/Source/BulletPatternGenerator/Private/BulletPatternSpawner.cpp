@@ -51,11 +51,17 @@ void ABulletPatternSpawner::BeginPlay()
 	}
 	else
 	{
-		TArray<AObjectPoolBase*> ObjectPools = UObjectPoolFunctionLibrary::GetAllObjectPools(this);
-
-		if (ObjectPools.Num() > 0 && ObjectPools[0])
-			ActiveBulletPool = ObjectPools[0];
+		#if !UE_BUILD_SHIPPING
+			check(ObjectPoolToUse && "Reference is null. Please make sure that the 'ObjectPoolToUse' property is not null.")
+		#endif
 	}
+	//else
+	//{
+	//	TArray<UObjectPoolBase*> ObjectPools = UObjectPoolFunctionLibrary::GetAllObjectPools(this);
+
+	//	if (ObjectPools.Num() > 0 && ObjectPools[0])
+	//		ActiveBulletPool = ObjectPools[0];
+	//}
 
 	ActiveBulletPattern = ActiveBulletPatternClass.GetDefaultObject();
 
@@ -83,15 +89,15 @@ void ABulletPatternSpawner::Tick(const float DeltaTime)
 	if (!bHasStarted)
 		return;
 
-	ElapsedTime += DeltaTime;
-	ActiveBulletPattern->Tick(DeltaTime);
-
 	if (ElapsedTime > ActiveBulletPattern->GetFireRate())
 	{
 		ElapsedTime = 0.0f;
 
 		ActiveBulletPattern->UpdatePattern(ActiveBulletPattern->GetFireRate());
 	}
+
+	ElapsedTime += DeltaTime;
+	ActiveBulletPattern->Tick(DeltaTime);
 }
 
 void ABulletPatternSpawner::SpawnBullet(UBulletPattern_Base* BulletPattern, const FVector& Direction, const float Speed)
@@ -143,7 +149,7 @@ void ABulletPatternSpawner::ChangeBulletPattern(const TSubclassOf<UBulletPattern
 	StartBulletPattern(NewBulletPattern.GetDefaultObject());
 }
 
-void ABulletPatternSpawner::ChangeObjectPool(const TSubclassOf<AObjectPoolBase> NewObjectPool)
+void ABulletPatternSpawner::ChangeObjectPool(const TSubclassOf<UObjectPoolBase> NewObjectPool)
 {
 	if (NewObjectPool.GetDefaultObject())
 	{

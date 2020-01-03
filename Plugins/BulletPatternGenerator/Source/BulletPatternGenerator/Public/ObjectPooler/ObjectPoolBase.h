@@ -6,13 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "ObjectPoolBase.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType, HideCategories=("Input", "Rendering", "Actor", "LOD", "Cooking"))
-class BULLETPATTERNGENERATOR_API AObjectPoolBase : public AActor
+UCLASS(Abstract, Blueprintable, BlueprintType)
+class BULLETPATTERNGENERATOR_API UObjectPoolBase : public UObject
 {
 	GENERATED_BODY()
 	
 public:	
-	AObjectPoolBase();
+	UObjectPoolBase();
 
 	/**
 	 * Retrieves an actor from the pool that's not currently in use. If all actors in the pool are in use, a null reference will be returned.
@@ -47,8 +47,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Object Pool")
 		int32 GetPoolSize() const;
 
+	void BeginPlay();
 protected:
-	void BeginPlay() override;
 
 	/**
 	 * Spawns an actor from the pool into the world. Marks the actor not in use as well

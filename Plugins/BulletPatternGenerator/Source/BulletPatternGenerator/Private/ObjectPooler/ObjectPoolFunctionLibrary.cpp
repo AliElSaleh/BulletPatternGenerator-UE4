@@ -3,40 +3,69 @@
 #include "ObjectPoolFunctionLibrary.h"
 
 #include "ObjectPooler/ObjectPoolBase.h"
+#include "ObjectPooler/ObjectPoolManager.h"
 
 #include "ObjectPooler/PooledActor.h"
 
 #include "Kismet/GameplayStatics.h"
 
-AObjectPoolBase* UObjectPoolFunctionLibrary::GetObjectPool(const UObject* WorldContextObject, const FName PoolName)
-{
-	TArray<AActor*> FoundObjectPools;
-	UGameplayStatics::GetAllActorsOfClass(WorldContextObject, AObjectPoolBase::StaticClass(), FoundObjectPools);
+TArray<class UObjectPoolBase*> UObjectPoolFunctionLibrary::ObjectPools;
+TArray<class AObjectPoolManager*> UObjectPoolFunctionLibrary::ObjectPoolManagers;
 
-	for (auto FoundObjectPool : FoundObjectPools)
+AObjectPoolManager* UObjectPoolFunctionLibrary::GetObjectPoolManager(const UObject* WorldContextObject, FName ManagerName)
+{
+	for (auto ObjectPoolManager : ObjectPoolManagers)
 	{
-		const auto ObjectPool = Cast<AObjectPoolBase>(FoundObjectPool);
-		
-		if (ObjectPool->GetPoolName() == PoolName)
-			return ObjectPool;
+		if (ObjectPoolManager->GetManagerName() == ManagerName)
+			return ObjectPoolManager;
 	}
 
 	return nullptr;
 }
 
-TArray<AObjectPoolBase*> UObjectPoolFunctionLibrary::GetAllObjectPools(const UObject* WorldContextObject)
+TArray<AObjectPoolManager*> UObjectPoolFunctionLibrary::GetAllObjectPoolManagers(const UObject* WorldContextObject)
 {
-	TArray<AActor*> FoundActors;
-	TArray<AObjectPoolBase*> FoundObjectPools;
-	UGameplayStatics::GetAllActorsOfClass(WorldContextObject, AObjectPoolBase::StaticClass(), FoundActors);
+	return ObjectPoolManagers;
+}
 
-	for (auto FoundActor : FoundActors)
+UObjectPoolBase* UObjectPoolFunctionLibrary::GetObjectPool(const UObject* WorldContextObject, const FName PoolName)
+{
+	for (auto ObjectPool : ObjectPools)
 	{
-		const auto ObjectPool = Cast<AObjectPoolBase>(FoundActor);
-		FoundObjectPools.Add(ObjectPool);
+		if (ObjectPool->GetPoolName() == PoolName)
+			return ObjectPool;
 	}
 
-	return FoundObjectPools;
+	return nullptr;
+	
+	//TArray<AActor*> FoundObjectPools;
+	//UGameplayStatics::GetAllActorsOfClass(WorldContextObject, UObjectPoolBase::StaticClass(), FoundObjectPools);
+	//
+	//for (auto FoundObjectPool : FoundObjectPools)
+	//{
+	//	const auto ObjectPool = Cast<UObjectPoolBase>(FoundObjectPool);
+	//	
+	//	if (ObjectPool->GetPoolName() == PoolName)
+	//		return ObjectPool;
+	//}
+	//
+	//return nullptr;
+}
+
+TArray<UObjectPoolBase*> UObjectPoolFunctionLibrary::GetAllObjectPools(const UObject* WorldContextObject)
+{
+	return ObjectPools;
+	//TArray<AActor*> FoundActors;
+	//TArray<UObjectPoolBase*> FoundObjectPools;
+	//UGameplayStatics::GetAllActorsOfClass(WorldContextObject, UObjectPoolBase::StaticClass(), FoundActors);
+	//
+	//for (auto FoundActor : FoundActors)
+	//{
+	//	const auto ObjectPool = Cast<UObjectPoolBase>(FoundActor);
+	//	FoundObjectPools.Add(ObjectPool);
+	//}
+	//
+	//return FoundObjectPools;
 }
 
 void UObjectPoolFunctionLibrary::MarkActorNotInUse(APooledActor* InPooledActor)

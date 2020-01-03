@@ -30,7 +30,7 @@ public:
 		void ChangeBulletPattern(TSubclassOf<class UBulletPattern_Base> NewBulletPattern);
 
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
-		void ChangeObjectPool(TSubclassOf<class AObjectPoolBase> NewObjectPool);
+		void ChangeObjectPool(TSubclassOf<class UObjectPoolBase> NewObjectPool);
 
 protected:
 	void BeginPlay() override;
@@ -47,7 +47,7 @@ protected:
 
 	// The active bullet pattern script
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Settings")
-		TSubclassOf<class AObjectPoolBase> ObjectPoolToUse;
+		TSubclassOf<class UObjectPoolBase> ObjectPoolToUse;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Status")
 		uint8 bHasStarted : 1;
@@ -59,7 +59,7 @@ protected:
 		class URotatingMovementComponent* RotatingMovementComponent;
 	
 private:
-	class AObjectPoolBase* ActiveBulletPool;
+	class UObjectPoolBase* ActiveBulletPool;
 	class UBulletPattern_Base* ActiveBulletPattern;
 
 	float ElapsedTime = 0.0f;
