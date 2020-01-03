@@ -20,27 +20,15 @@ public:
 
 	void AssignSpawner(class ABulletPatternSpawner* NewSpawner);
 
-	virtual void BeginPlay();
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason);
-	virtual void Tick(float DeltaTime);
-	virtual void UpdatePattern(float DeltaTime);
+	UFUNCTION(BlueprintNativeEvent, DisplayName = "Begin Play", Category = "Bullet Pattern")
+		void Broadcast_BeginPlay_Event();
 
-	// Event when play begins for this bullet pattern class
-	UFUNCTION(BlueprintImplementableEvent, DisplayName = "Begin Play", Category = "Bullet Pattern")
-		void BeginPlay_BP();
-
-	// Event to notify blueprints this actor is being deleted or removed from a level
-	UFUNCTION(BlueprintImplementableEvent, DisplayName = "End Play", Category = "Bullet Pattern")
-		void EndPlay_BP(EEndPlayReason::Type EndPlayReason);
-
-	// Event called every frame, if ticking is enabled
-	UFUNCTION(BlueprintImplementableEvent, DisplayName = "Tick", Category = "Bullet Pattern")
-		void Tick_BP(float DeltaTime);
-
-	// Event called every 'fire-rate' seconds, if ticking is enabled
-	UFUNCTION(BlueprintImplementableEvent, DisplayName = "Update Pattern", Category = "Bullet Pattern")
-		void UpdatePattern_BP(float DeltaTime);
-
+	UFUNCTION(BlueprintNativeEvent, DisplayName = "Tick", Category = "Bullet Pattern")
+		void Broadcast_Tick_Event(float DeltaTime);
+	
+	UFUNCTION(BlueprintNativeEvent, DisplayName = "Update Pattern", Category = "Bullet Pattern")
+		void Broadcast_UpdatePattern_Event(float DeltaTime);
+	
 	// Retrieves the speed that the bullets are using from this pattern
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
 		FORCEINLINE float GetBulletSpeed() const { return BulletSpeed; }
@@ -48,20 +36,24 @@ public:
 	// Retrieves the fire-rate of this pattern
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
 		FORCEINLINE float GetFireRate() const { return FireRate; }
-	
-	// Retrieves the spin speed of this pattern
-	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
-		FORCEINLINE float GetSpinSpeed() const { return SpinSpeed; }
+
 
 	// Retrieves the bullet pool that this pattern is referencing
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
 		FORCEINLINE class UObjectPoolBase* GetBulletPool() const { return BulletPoolToUse; }
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Settings")
+		FRotator TargetRotation = FRotator(0.0f, 0.0f, 0.0f);
+
 protected:
+	virtual void BeginPlay();
+	virtual void Tick(float DeltaTime);
+	virtual void UpdatePattern(float DeltaTime);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
 		FName PatternName = "Default Pattern";
 
-	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern | Settings")
+	UPROPERTY(BlueprintReadWrite, Category = "Bullet Pattern")
 		FVector BulletDirection;
 
 	// The object pool to reference when spawning bullets
@@ -76,14 +68,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings", meta = (ClampMin = 0.005f))
 		float FireRate = 1.0f;
 
-	// The speed of the 'spinning' effect
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings", meta = (ClampMin = 0.0f))
-		float SpinSpeed = 1.0f;
-
 	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
 		class ABulletPatternSpawner* BulletPatternSpawner;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
+		APawn* Player;
 
 	class UObjectPoolBase* BulletPoolToUse;
 
 	float ElapsedTime = 0.0f;
+
+private:
+	void Broadcast_BeginPlay_Event_Implementation();
+	void Broadcast_Tick_Event_Implementation(float DeltaTime);
+	void Broadcast_UpdatePattern_Event_Implementation(float DeltaTime);
 };

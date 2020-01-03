@@ -5,9 +5,7 @@
 
 #include "BulletPatternSpawner.h"
 
-#include "GameFramework/Pawn.h"
-
-#include "Kismet/GameplayStatics.h"
+//#include "GameFramework/Pawn.h"
 
 UBulletPattern_SineWaveBase::UBulletPattern_SineWaveBase()
 {
@@ -21,7 +19,6 @@ void UBulletPattern_SineWaveBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Player = UGameplayStatics::GetPlayerPawn(this, 0);
 }
 
 void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)

@@ -70,16 +70,6 @@ void ABulletPatternSpawner::BeginPlay()
 	StartBulletPattern(ActiveBulletPattern);
 }
 
-void ABulletPatternSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	if (!bHasStarted)
-		return;
-	
-	ActiveBulletPattern->EndPlay(EndPlayReason);
-}
-
 void ABulletPatternSpawner::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -91,13 +81,11 @@ void ABulletPatternSpawner::Tick(const float DeltaTime)
 	{
 		ElapsedTime = 0.0f;
 
-		ActiveBulletPattern->UpdatePattern(ActiveBulletPattern->GetFireRate());
-		ActiveBulletPattern->UpdatePattern_BP(ActiveBulletPattern->GetFireRate());
+		ActiveBulletPattern->Broadcast_UpdatePattern_Event(ActiveBulletPattern->GetFireRate());
 	}
 
 	ElapsedTime += DeltaTime;
-	ActiveBulletPattern->Tick(DeltaTime);
-	ActiveBulletPattern->Tick_BP(DeltaTime);
+	ActiveBulletPattern->Broadcast_Tick_Event(DeltaTime);
 }
 
 void ABulletPatternSpawner::SpawnBullet(UBulletPattern_Base* BulletPattern, const FVector& Direction, const float Speed)
@@ -119,8 +107,7 @@ void ABulletPatternSpawner::StartBulletPattern(UBulletPattern_Base* BulletPatter
 	//RotatingMovementComponent->RotationRate = FRotator(0.0f, ActiveBulletPattern->GetSpinSpeed(), 0.0f);
 
 	ActiveBulletPattern->AssignSpawner(this);
-	ActiveBulletPattern->BeginPlay();
-	ActiveBulletPattern->BeginPlay_BP();
+	ActiveBulletPattern->Broadcast_BeginPlay_Event();
 
 	ResumeBulletPattern();
 }

@@ -17,16 +17,19 @@ class BULLETPATTERNGENERATOR_API UBulletPattern_SineWaveBase : public UBulletPat
 public:
 	UBulletPattern_SineWaveBase();
 
+		// Retrieves the spin speed of this pattern
+	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
+		FORCEINLINE float GetSpinSpeed() const { return SpinSpeed; }
+	
 protected:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern|Sine Wave")
 		FRotator AngleSpread = FRotator(0.0f, 30.0f, 0.0f);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern|Sine Wave")
-		FRotator TargetRotation = FRotator(0.0f, 0.0f, 0.0f);
-
-	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern|Sine Wave")
-		APawn* Player;
+	// The speed of the 'spinning' effect
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern|Sine Wave", meta = (ClampMin = 0.0f))
+		float SpinSpeed = 1.0f;
 };
