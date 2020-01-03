@@ -45,6 +45,11 @@ void ABulletPatternSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	for (auto BulletPatternClass : BulletPatternClasses)
+	{
+		BulletPatterns.Add(NewObject<UBulletPattern_Base>(this, BulletPatternClass.Get(), BulletPatternClass->GetFName(), RF_NoFlags, BulletPatternClass.GetDefaultObject(), true));
+	}
+
 	if (ObjectPoolToUse)
 	{
 		ActiveBulletPool = UObjectPoolFunctionLibrary::GetObjectPool(this, ObjectPoolToUse.GetDefaultObject()->GetPoolName());
@@ -55,15 +60,8 @@ void ABulletPatternSpawner::BeginPlay()
 			check(ObjectPoolToUse && "Reference is null. Please make sure that the 'ObjectPoolToUse' property is not null.")
 		#endif
 	}
-	//else
-	//{
-	//	TArray<UObjectPoolBase*> ObjectPools = UObjectPoolFunctionLibrary::GetAllObjectPools(this);
 
-	//	if (ObjectPools.Num() > 0 && ObjectPools[0])
-	//		ActiveBulletPool = ObjectPools[0];
-	//}
-
-	ActiveBulletPattern = ActiveBulletPatternClass.GetDefaultObject();
+	ActiveBulletPattern = BulletPatterns[0];
 
 #if !UE_BUILD_SHIPPING
 	check(ActiveBulletPattern && "Reference is null. Please make sure that the 'Active Bullet Pattern' property is not null.")
@@ -94,15 +92,17 @@ void ABulletPatternSpawner::Tick(const float DeltaTime)
 		ElapsedTime = 0.0f;
 
 		ActiveBulletPattern->UpdatePattern(ActiveBulletPattern->GetFireRate());
+		ActiveBulletPattern->UpdatePattern_BP(ActiveBulletPattern->GetFireRate());
 	}
 
 	ElapsedTime += DeltaTime;
 	ActiveBulletPattern->Tick(DeltaTime);
+	ActiveBulletPattern->Tick_BP(DeltaTime);
 }
 
 void ABulletPatternSpawner::SpawnBullet(UBulletPattern_Base* BulletPattern, const FVector& Direction, const float Speed)
 {
-	ABullet* Bullet = Cast<ABullet>(ActiveBulletPool->GetActorFromPool());
+	ABullet* Bullet = Cast<ABullet>(BulletPattern->GetBulletPool()->GetActorFromPool());
 
 	Bullet->SetActorLocation(GetActorLocation());
 	Bullet->SetupBehaviour(BulletPattern, Direction, Speed);
@@ -120,6 +120,7 @@ void ABulletPatternSpawner::StartBulletPattern(UBulletPattern_Base* BulletPatter
 
 	ActiveBulletPattern->AssignSpawner(this);
 	ActiveBulletPattern->BeginPlay();
+	ActiveBulletPattern->BeginPlay_BP();
 
 	ResumeBulletPattern();
 }

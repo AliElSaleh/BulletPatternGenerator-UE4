@@ -5,6 +5,10 @@
 
 #include "BulletPatternSpawner.h"
 
+#include "GameFramework/Pawn.h"
+
+#include "Kismet/GameplayStatics.h"
+
 UBulletPattern_SineWaveBase::UBulletPattern_SineWaveBase()
 {
 	PatternName = "Sine Wave Pattern";
@@ -13,11 +17,22 @@ UBulletPattern_SineWaveBase::UBulletPattern_SineWaveBase()
 	FireRate = 0.1f;
 }
 
+void UBulletPattern_SineWaveBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Player = UGameplayStatics::GetPlayerPawn(this, 0);
+}
+
 void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	ElapsedTime += DeltaTime * SpinSpeed;
 
-	FRotator NewRotation = BulletPatternSpawner->GetActorRotation();
+	//TargetRotation = (Player->GetActorLocation() - BulletPatternSpawner->GetActorLocation()).Rotation();
+
+	FRotator NewRotation = TargetRotation;
 	const float DeltaRotationYaw = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * AngleSpread.Yaw;
 	const float DeltaRotationPitch = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * AngleSpread.Pitch;
 	const float DeltaRotationRoll = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * AngleSpread.Roll;
@@ -38,7 +53,6 @@ void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
 	}
 	
 	BulletPatternSpawner->SetActorRotation(NewRotation);
+	TargetRotation = NewRotation;
 	BulletDirection = NewRotation.Vector().GetSafeNormal();
-
-	ReceiveTick(DeltaTime);
 }

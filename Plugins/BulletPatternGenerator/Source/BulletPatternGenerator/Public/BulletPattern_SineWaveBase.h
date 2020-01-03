@@ -16,9 +16,17 @@ class BULLETPATTERNGENERATOR_API UBulletPattern_SineWaveBase : public UBulletPat
 	
 public:
 	UBulletPattern_SineWaveBase();
-	
+
+protected:
+	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern|Sine Wave")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern|Sine Wave")
 		FRotator AngleSpread = FRotator(0.0f, 30.0f, 0.0f);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern|Sine Wave")
+		FRotator TargetRotation = FRotator(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern|Sine Wave")
+		APawn* Player;
 };

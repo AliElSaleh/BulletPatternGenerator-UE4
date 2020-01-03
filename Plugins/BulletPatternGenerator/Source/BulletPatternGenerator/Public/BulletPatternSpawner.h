@@ -42,10 +42,6 @@ protected:
 		TArray<TSubclassOf<class UBulletPattern_Base>> BulletPatternClasses;
 
 	// The active bullet pattern script
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, DisplayName = "Active Bullet Pattern", Category = "Bullet Pattern Spawner|Settings")
-		TSubclassOf<class UBulletPattern_Base> ActiveBulletPatternClass;
-
-	// The active bullet pattern script
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Settings")
 		TSubclassOf<class UObjectPoolBase> ObjectPoolToUse;
 
@@ -60,7 +56,12 @@ protected:
 	
 private:
 	class UObjectPoolBase* ActiveBulletPool;
-	class UBulletPattern_Base* ActiveBulletPattern;
+
+	UPROPERTY()
+		class UBulletPattern_Base* ActiveBulletPattern;
+
+	UPROPERTY()
+		TArray<class UBulletPattern_Base*> BulletPatterns;
 
 	float ElapsedTime = 0.0f;
 };
