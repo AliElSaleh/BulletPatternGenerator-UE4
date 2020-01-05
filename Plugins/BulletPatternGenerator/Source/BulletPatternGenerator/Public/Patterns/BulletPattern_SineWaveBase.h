@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class BULLETPATTERNGENERATOR_API UBulletPattern_SineWaveBase : public UBulletPattern_SpinnableBase
+class BULLETPATTERNGENERATOR_API UBulletPattern_SineWaveBase : public UBulletPattern_Base
 {
 	GENERATED_BODY()
 	
@@ -26,6 +26,16 @@ protected:
 	void Tick(float DeltaTime) override;
 	void UpdatePattern(float DeltaTime) override;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern|Sine Wave")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Sine Wave")
+		FRotator TargetRotation = FRotator(0.0f);
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Sine Wave")
 		FRotator AngleSpread = FRotator(0.0f, 30.0f, 0.0f);
+
+	// The speed of the 'spinning' effect
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Sine Wave", meta = (ClampMin = 0.0f))
+		float SpinSpeed = 1.0f;
+
+	float ElapsedTime = 0.0f;
+
 };

@@ -23,7 +23,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Spinnable")
 		FRotator TargetRotation = FRotator(0.0f);
 
-	// The speed of the 'spinning' effect
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Spinnable", meta = (ClampMin = 0.0f))
-		float SpinSpeed = 1.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Spinnable")
+		FRotator RotationRate = FRotator(0.0f, 100.0f, 0.0f);
+
 };
