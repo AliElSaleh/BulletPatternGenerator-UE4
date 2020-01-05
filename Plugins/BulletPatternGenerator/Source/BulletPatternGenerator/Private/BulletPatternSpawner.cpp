@@ -50,7 +50,16 @@ void ABulletPatternSpawner::BeginPlay()
 		BulletPatterns.Add(NewObject<UBulletPattern_Base>(this, BulletPatternClass.Get(), BulletPatternClass->GetFName(), RF_NoFlags, BulletPatternClass.GetDefaultObject(), true));
 	}
 
-	ActiveBulletPattern = BulletPatterns[0];
+	if (BulletPatternClass)
+	{
+		const int32 Index = BulletPatterns.Add(NewObject<UBulletPattern_Base>(this, BulletPatternClass.Get(), BulletPatternClass->GetFName(), RF_NoFlags, BulletPatternClass.GetDefaultObject(), true));
+		
+		ActiveBulletPattern = BulletPatterns[Index];
+	}
+	else
+	{
+		ActiveBulletPattern = BulletPatterns[0];
+	}
 
 #if !UE_BUILD_SHIPPING
 	check(ActiveBulletPattern && "Reference is null. Please make sure that the 'Active Bullet Pattern' property is not null.")
@@ -81,10 +90,13 @@ ABullet* ABulletPatternSpawner::SpawnBullet(UBulletPattern_Base* BulletPattern, 
 {
 	ABullet* Bullet = Cast<ABullet>(BulletPool->GetActorFromPool());
 
-	Bullet->SetActorLocation(GetActorLocation());
-	Bullet->SetupBehaviour(BulletPattern, Direction, Speed);
+	if (Bullet)
+	{
+		Bullet->SetActorLocation(GetActorLocation());
+		Bullet->SetupBehaviour(BulletPattern, Direction, Speed);
 
-	Bullet->PooledActor_BeginPlay();
+		Bullet->PooledActor_BeginPlay();
+	}
 
 	return Bullet;
 }

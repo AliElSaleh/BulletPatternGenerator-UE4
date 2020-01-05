@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BulletPatternSpawner.generated.h"
 
-UCLASS(BlueprintType, Blueprintable, HideCategories = ("Input", "Actor", "Replication", "Collision", "LOD", "Cooking"))
+UCLASS(BlueprintType, Blueprintable, HideCategories = ("Input", "Actor", "Replication", "Collision", "LOD"))
 class BULLETPATTERNGENERATOR_API ABulletPatternSpawner : public AActor
 {
 	GENERATED_BODY()
@@ -43,6 +43,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Components")
 		class URotatingMovementComponent* RotatingMovementComponent;
 	
+	UPROPERTY(EditInstanceOnly, DisplayName = "Bullet Pattern", Category = "Bullet Pattern Spawner|Settings")
+		TSubclassOf<class UBulletPattern_Base> BulletPatternClass;
 private:
 	UPROPERTY()
 		class UBulletPattern_Base* ActiveBulletPattern;
