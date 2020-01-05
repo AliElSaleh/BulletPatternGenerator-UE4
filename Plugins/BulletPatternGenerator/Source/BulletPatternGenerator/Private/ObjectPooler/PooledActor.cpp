@@ -39,16 +39,16 @@ void APooledActor::OnLifeSpanExpired()
 
 void APooledActor::PooledActor_BeginPlay_Implementation()
 {
-	MarkInUse();
+	MarkInUse(true);
 }
 
 void APooledActor::PooledActor_EndPlay_Implementation()
 {
-	MarkNotInUse();
+	MarkNotInUse(true);
 	SetActorLocation(FVector(0.0f), false, nullptr, ETeleportType::TeleportPhysics);
 }
 
-void APooledActor::MarkInUse()
+void APooledActor::MarkInUse(const bool bBroadcast)
 {
 	SetActive(true);
 
@@ -56,10 +56,11 @@ void APooledActor::MarkInUse()
 
 	bInUse = true;
 
-	InUse.Broadcast();
+	if (bBroadcast)
+		InUse.Broadcast(this);
 }
 
-void APooledActor::MarkNotInUse()
+void APooledActor::MarkNotInUse(const bool bBroadcast)
 {
 	SetActive(false);
 
@@ -67,7 +68,8 @@ void APooledActor::MarkNotInUse()
 
 	bInUse = false;
 
-	NotInUse.Broadcast();
+	if (bBroadcast)
+		NotInUse.Broadcast(this);
 }
 
 void APooledActor::SetActive(const bool bActive)

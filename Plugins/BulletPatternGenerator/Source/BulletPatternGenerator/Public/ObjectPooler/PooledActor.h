@@ -6,8 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "PooledActor.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInUseSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNotInUseSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInUseSignature, class APooledActor*, PooledActor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNotInUseSignature, class APooledActor*, PooledActor);
 
 UCLASS(BlueprintType, Blueprintable)
 class BULLETPATTERNGENERATOR_API APooledActor : public AActor
@@ -17,13 +17,8 @@ class BULLETPATTERNGENERATOR_API APooledActor : public AActor
 public:	
 	APooledActor();
 
-	// Called when this actor has exited the pool (i.e currently in use)
-	UPROPERTY(BlueprintAssignable, Category = "Pooled Actor")
-		FInUseSignature InUse;
-
-	// Called when this actor has entered back into the pool (i.e currently not in use)
-	UPROPERTY(BlueprintAssignable, Category = "Pooled Actor")
-		FNotInUseSignature NotInUse;
+	FInUseSignature& GetInUseEvent() { return InUse; }
+	FNotInUseSignature& GetNotInUseEvent() { return NotInUse; }
 	
 	/**
 	 * The pooled actor's custom begin play function. An event that is called by the user elsewhere (either in Blueprint or C++)
@@ -41,11 +36,11 @@ public:
 
 	// Marks the actor in use. Enables tick (if specified), shows actor in game, enables collision (if specified), activates components and sets actor time dilation to 1.0
 	UFUNCTION(BlueprintCallable, Category = "Pooled Actor")
-		void MarkInUse();
+		void MarkInUse(bool bBroadcast = true);
 
 	// Marks the actor not in use. Disables tick, hides actor in game, disables collision, deactivates components and sets actor time dilation to 0.0
 	UFUNCTION(BlueprintCallable, Category = "Pooled Actor")
-		void MarkNotInUse();
+		void MarkNotInUse(bool bBroadcast = true);
 
 	/**
 	 * Is this actor in use by its pool?
@@ -88,6 +83,14 @@ protected:
 	 * @param bActive	 True, activates actor and all components. False, deactivates actor and all components
 	 */
 	void SetActive(bool bActive);
+
+	// Called when this actor has exited the pool (i.e currently in use)
+	UPROPERTY(BlueprintAssignable, Category = "Pooled Actor")
+		FInUseSignature InUse;
+
+	// Called when this actor has entered back into the pool (i.e currently not in use)
+	UPROPERTY(BlueprintAssignable, Category = "Pooled Actor")
+		FNotInUseSignature NotInUse;
 
 	// Should this actor ever be allowed to tick?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pooled Actor")
