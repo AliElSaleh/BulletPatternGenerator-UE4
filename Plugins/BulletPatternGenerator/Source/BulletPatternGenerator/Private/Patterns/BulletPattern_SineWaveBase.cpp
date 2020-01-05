@@ -9,7 +9,7 @@
 
 UBulletPattern_SineWaveBase::UBulletPattern_SineWaveBase()
 {
-	PatternName = "Sine Wave Pattern";
+	PatternName = "Sine Wave";
 	BulletSpeed = 600.0f;
 	SpinSpeed = 5.0f;
 	FireRate = 0.1f;
@@ -19,6 +19,7 @@ void UBulletPattern_SineWaveBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	TargetRotation = BulletPatternSpawner->GetActorRotation();
 }
 
 void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
@@ -52,4 +53,9 @@ void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
 	BulletPatternSpawner->SetActorRotation(NewRotation);
 	TargetRotation = NewRotation;
 	BulletDirection = NewRotation.Vector().GetSafeNormal();
+}
+
+void UBulletPattern_SineWaveBase::UpdatePattern(float DeltaTime)
+{
+	SpawnBullet();
 }

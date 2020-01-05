@@ -37,18 +37,20 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
 		FORCEINLINE float GetFireRate() const { return FireRate; }
 
-
 	// Retrieves the bullet pool that this pattern is referencing
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
 		FORCEINLINE class UObjectPoolBase* GetBulletPool() const { return BulletPoolToUse; }
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Settings")
-		FRotator TargetRotation = FRotator(0.0f, 0.0f, 0.0f);
 
 protected:
 	virtual void BeginPlay();
 	virtual void Tick(float DeltaTime);
 	virtual void UpdatePattern(float DeltaTime);
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
+		void SpawnBullet();
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
+		void ChangeBulletPool(TSubclassOf<UObjectPoolBase> NewBulletPool);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
 		FName PatternName = "Default Pattern";

@@ -55,6 +55,8 @@ void APooledActor::MarkInUse()
 	CustomTimeDilation = 1.0f;
 
 	bInUse = true;
+
+	InUse.Broadcast();
 }
 
 void APooledActor::MarkNotInUse()
@@ -64,6 +66,8 @@ void APooledActor::MarkNotInUse()
 	CustomTimeDilation = 0.0f;
 
 	bInUse = false;
+
+	NotInUse.Broadcast();
 }
 
 void APooledActor::SetActive(const bool bActive)

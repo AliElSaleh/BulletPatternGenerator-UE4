@@ -23,6 +23,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Bullet")
 		void SetupBehaviour(class UBulletPattern_Base* BulletPattern, FVector InDirection, float InSpeed);
 
+	UFUNCTION(BlueprintCallable, Category = "Bullet")
+		void ChangeDirection(FVector NewDirection);
+	
+	UFUNCTION(BlueprintCallable, Category = "Bullet")
+		void ChangeSpeed(float NewSpeed);
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet")
+		void ChangeDirectionAndSpeed(FVector NewDirection, float NewSpeed);
+
 protected:
 	void BeginPlay() override;
 

@@ -7,12 +7,10 @@
 
 #include "ObjectPooler/PooledActor.h"
 
-#include "Kismet/GameplayStatics.h"
-
 TArray<class UObjectPoolBase*> UObjectPoolFunctionLibrary::ObjectPools;
 TArray<class AObjectPoolManager*> UObjectPoolFunctionLibrary::ObjectPoolManagers;
 
-AObjectPoolManager* UObjectPoolFunctionLibrary::GetObjectPoolManager(const UObject* WorldContextObject, FName ManagerName)
+AObjectPoolManager* UObjectPoolFunctionLibrary::GetObjectPoolManager(FName ManagerName)
 {
 	for (auto ObjectPoolManager : ObjectPoolManagers)
 	{
@@ -23,12 +21,12 @@ AObjectPoolManager* UObjectPoolFunctionLibrary::GetObjectPoolManager(const UObje
 	return nullptr;
 }
 
-TArray<AObjectPoolManager*> UObjectPoolFunctionLibrary::GetAllObjectPoolManagers(const UObject* WorldContextObject)
+TArray<AObjectPoolManager*> UObjectPoolFunctionLibrary::GetAllObjectPoolManagers()
 {
 	return ObjectPoolManagers;
 }
 
-UObjectPoolBase* UObjectPoolFunctionLibrary::GetObjectPool(const UObject* WorldContextObject, const FName PoolName)
+UObjectPoolBase* UObjectPoolFunctionLibrary::GetObjectPool(const FName PoolName)
 {
 	for (auto ObjectPool : ObjectPools)
 	{
@@ -52,7 +50,7 @@ UObjectPoolBase* UObjectPoolFunctionLibrary::GetObjectPool(const UObject* WorldC
 	//return nullptr;
 }
 
-TArray<UObjectPoolBase*> UObjectPoolFunctionLibrary::GetAllObjectPools(const UObject* WorldContextObject)
+TArray<UObjectPoolBase*> UObjectPoolFunctionLibrary::GetAllObjectPools()
 {
 	return ObjectPools;
 	//TArray<AActor*> FoundActors;

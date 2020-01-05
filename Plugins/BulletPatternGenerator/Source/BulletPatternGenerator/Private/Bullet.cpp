@@ -65,6 +65,28 @@ void ABullet::SetupBehaviour(class UBulletPattern_Base* BulletPattern, const FVe
 	ProjectileMovementComponent->Velocity = Direction * Speed;
 }
 
+void ABullet::ChangeDirection(const FVector NewDirection)
+{
+	Direction = NewDirection;
+
+	ProjectileMovementComponent->Velocity = Direction * Speed;
+}
+
+void ABullet::ChangeSpeed(const float NewSpeed)
+{
+	Speed = NewSpeed;
+
+	ProjectileMovementComponent->Velocity = Direction * Speed;
+}
+
+void ABullet::ChangeDirectionAndSpeed(const FVector NewDirection, const float NewSpeed)
+{
+	Direction = NewDirection;
+	Speed = NewSpeed;
+	
+	ProjectileMovementComponent->Velocity = Direction * Speed;
+}
+
 void ABullet::OnOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, const int32 OtherBodyIndex, const bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->IsA(StaticClass()))

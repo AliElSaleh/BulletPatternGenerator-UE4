@@ -16,16 +16,16 @@ class BULLETPATTERNGENERATOR_API UObjectPoolFunctionLibrary : public UBlueprintF
 	
 public:
 	UFUNCTION(BlueprintPure, Category = "Object Pooler")
-		static class AObjectPoolManager* GetObjectPoolManager(const UObject* WorldContextObject, FName ManagerName);
+		static class AObjectPoolManager* GetObjectPoolManager(FName ManagerName);
 
 	UFUNCTION(BlueprintPure, Category = "Object Pooler")
-		static TArray<class AObjectPoolManager*> GetAllObjectPoolManagers(const UObject* WorldContextObject);
+		static TArray<class AObjectPoolManager*> GetAllObjectPoolManagers();
 
 	UFUNCTION(BlueprintPure, Category = "Object Pooler")
-		static class UObjectPoolBase* GetObjectPool(const UObject* WorldContextObject, FName PoolName);
+		static class UObjectPoolBase* GetObjectPool(FName PoolName);
 
 	UFUNCTION(BlueprintPure, Category = "Object Pooler")
-		static TArray<class UObjectPoolBase*> GetAllObjectPools(const UObject* WorldContextObject);
+		static TArray<class UObjectPoolBase*> GetAllObjectPools();
 
 	/**
 	 * Marks the specified pooled actor not in use. Disables tick, hides actor in game, disables collision, deactivates components and sets actor time dilation to 0.0

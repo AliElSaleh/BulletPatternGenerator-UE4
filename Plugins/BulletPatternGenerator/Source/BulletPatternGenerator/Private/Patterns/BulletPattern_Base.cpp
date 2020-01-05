@@ -4,6 +4,8 @@
 
 #include "BulletPatternSpawner.h"
 
+#include "Bullet.h"
+
 #include "ObjectPooler/ObjectPoolFunctionLibrary.h"
 #include "ObjectPooler/ObjectPoolBase.h"
 
@@ -32,7 +34,7 @@ void UBulletPattern_Base::BeginPlay()
 {
 	Player = UGameplayStatics::GetPlayerPawn(this, 0);
 
-	BulletPoolToUse = UObjectPoolFunctionLibrary::GetObjectPool(this, BulletPoolClassToUse.GetDefaultObject()->GetPoolName());
+	BulletPoolToUse = UObjectPoolFunctionLibrary::GetObjectPool(BulletPoolClassToUse.GetDefaultObject()->GetPoolName());
 }
 
 void UBulletPattern_Base::Tick(float DeltaTime)
@@ -41,7 +43,18 @@ void UBulletPattern_Base::Tick(float DeltaTime)
 
 void UBulletPattern_Base::UpdatePattern(float DeltaTime)
 {
-	BulletPatternSpawner->SpawnBullet(this, BulletDirection, BulletSpeed);
+	//BulletPatternSpawner->SpawnBullet(this, BulletDirection, BulletSpeed);
+}
+
+void UBulletPattern_Base::SpawnBullet()
+{
+	BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, BulletDirection, BulletSpeed);
+}
+
+void UBulletPattern_Base::ChangeBulletPool(const TSubclassOf<UObjectPoolBase> NewBulletPool)
+{
+	if (NewBulletPool)
+		BulletPoolToUse = UObjectPoolFunctionLibrary::GetObjectPool(NewBulletPool.GetDefaultObject()->GetPoolName());
 }
 
 void UBulletPattern_Base::AssignSpawner(ABulletPatternSpawner* NewSpawner)

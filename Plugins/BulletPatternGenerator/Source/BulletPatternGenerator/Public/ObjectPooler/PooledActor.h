@@ -6,7 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "PooledActor.generated.h"
 
-UCLASS()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInUseSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNotInUseSignature);
+
+UCLASS(BlueprintType, Blueprintable)
 class BULLETPATTERNGENERATOR_API APooledActor : public AActor
 {
 	GENERATED_BODY()
@@ -14,6 +17,14 @@ class BULLETPATTERNGENERATOR_API APooledActor : public AActor
 public:	
 	APooledActor();
 
+	// Called when this actor has exited the pool (i.e currently in use)
+	UPROPERTY(BlueprintAssignable, Category = "Pooled Actor")
+		FInUseSignature InUse;
+
+	// Called when this actor has entered back into the pool (i.e currently not in use)
+	UPROPERTY(BlueprintAssignable, Category = "Pooled Actor")
+		FNotInUseSignature NotInUse;
+	
 	/**
 	 * The pooled actor's custom begin play function. An event that is called by the user elsewhere (either in Blueprint or C++)
 	 * Call this function after you've retrieved this actor from the pool.
