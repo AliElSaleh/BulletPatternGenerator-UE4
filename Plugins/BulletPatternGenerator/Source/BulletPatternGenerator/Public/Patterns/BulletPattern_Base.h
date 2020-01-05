@@ -7,6 +7,14 @@
 #include "Engine/EngineTypes.h"
 #include "BulletPattern_Base.generated.h"
 
+UENUM(BlueprintType)
+enum EBulletDespawnSetting
+{
+	BDS_LifespanExpired			UMETA(DisplayName="When bullet lifespan has expired"),
+	BDS_OutOfScreen				UMETA(DisplayName="When bullet has left the screen"),
+	BDS_MaxDistanceTravelled	UMETA(DisplayName="When bullet has travelled beyond the max distance")
+};
+
 /**
  * The base class for all bullet pattern types.
  */
@@ -52,6 +60,11 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
 		void ChangeBulletPool(TSubclassOf<UObjectPoolBase> NewBulletPool);
 
+	UFUNCTION()
+		void OnBulletMaxDistanceTravelled(class APooledActor* PooledActor);
+
+		void OnBulletOutOfScreen(class APooledActor* PooledActor);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
 		FName PatternName = "Default Pattern";
 
@@ -70,15 +83,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings", meta = (ClampMin = 0.005f))
 		float FireRate = 1.0f;
 
+	// The firing rate when spawning bullets
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
+		TEnumAsByte<EBulletDespawnSetting> DespawnSetting = BDS_LifespanExpired;
+
+	// The firing rate when spawning bullets
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings", meta = (ClampMin = 0.0f))
+		float MaxBulletTravelDistance = 5000.0f;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
 		class ABulletPatternSpawner* BulletPatternSpawner;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
 		APawn* Player;
 
-	class UObjectPoolBase* BulletPoolToUse;
+	TArray<class ABullet*> Bullets;
 
-	float ElapsedTime = 0.0f;
+	class UObjectPoolBase* BulletPoolToUse;
 
 private:
 	void Broadcast_BeginPlay_Event_Implementation();
