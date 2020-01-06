@@ -7,7 +7,6 @@
 
 #include "GameFramework/RotatingMovementComponent.h"
 
-#include "ObjectPooler/ObjectPoolFunctionLibrary.h"
 #include "ObjectPooler/ObjectPoolBase.h"
 
 #include "Engine/StaticMesh.h"
@@ -110,6 +109,7 @@ void ABulletPatternSpawner::StartBulletPattern(UBulletPattern_Base* BulletPatter
 	//RotatingMovementComponent->RotationRate = FRotator(0.0f, ActiveBulletPattern->GetSpinSpeed(), 0.0f);
 
 	ActiveBulletPattern->AssignSpawner(this);
+	ActiveBulletPattern->Initialize();
 	ActiveBulletPattern->Broadcast_BeginPlay_Event();
 
 	ResumeBulletPattern();
@@ -135,7 +135,10 @@ void ABulletPatternSpawner::ChangeBulletPattern(const TSubclassOf<UBulletPattern
 {
 	StopBulletPattern();
 
-	//ActiveBulletPattern->EndPlay(EEndPlayReason::Destroyed);
-
 	StartBulletPattern(NewBulletPattern.GetDefaultObject());
+}
+
+FName ABulletPatternSpawner::GetActiveBulletPatternName() const
+{
+	return ActiveBulletPattern ? ActiveBulletPattern->GetPatternName() : "Null";
 }

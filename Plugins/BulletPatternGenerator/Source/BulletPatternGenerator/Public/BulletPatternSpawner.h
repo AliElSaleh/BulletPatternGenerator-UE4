@@ -29,6 +29,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern Spawner")
 		void ChangeBulletPattern(TSubclassOf<class UBulletPattern_Base> NewBulletPattern);
 
+	UFUNCTION(BlueprintPure, Category = "Bullet Pattern Spawner")
+		FName GetActiveBulletPatternName() const;
+
+	UFUNCTION(BlueprintPure, Category = "Bullet Pattern Spawner")
+		TSubclassOf<class UBulletPattern_Base> GetActiveBulletPatternClass() const { return BulletPatternClass; }
+
 protected:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
