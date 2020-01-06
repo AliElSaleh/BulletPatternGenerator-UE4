@@ -16,6 +16,12 @@ APooledActor::APooledActor()
 
 void APooledActor::AssignToPool(UObjectPoolBase* InPoolToAssign)
 {
+	if (!InPoolToAssign)
+		return;
+
+	if (PoolOwner)
+		PoolOwner->RemoveActorFromPool(this);
+
 	PoolOwner = InPoolToAssign;
 }
 
