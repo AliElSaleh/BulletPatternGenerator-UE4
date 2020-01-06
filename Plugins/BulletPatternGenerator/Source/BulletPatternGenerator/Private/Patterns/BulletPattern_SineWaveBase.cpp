@@ -13,13 +13,6 @@ UBulletPattern_SineWaveBase::UBulletPattern_SineWaveBase()
 	FireRate = 0.1f;
 }
 
-void UBulletPattern_SineWaveBase::BeginPlay()
-{
-	Super::BeginPlay();
-
-	//TargetRotation = BulletPatternSpawner->GetActorRotation();
-}
-
 void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -46,7 +39,7 @@ void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
 		NewRotation.Roll += DeltaRotationRoll;
 	}
 	
-	BulletPatternSpawner->SetActorRotation(NewRotation);
+	//BulletPatternSpawner->SetActorRotation(NewRotation);
 	TargetRotation = NewRotation;
 	BulletDirection = NewRotation.Vector();
 }

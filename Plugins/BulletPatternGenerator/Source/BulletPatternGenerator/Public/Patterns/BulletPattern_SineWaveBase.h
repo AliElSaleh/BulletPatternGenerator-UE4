@@ -22,7 +22,6 @@ public:
 		FORCEINLINE float GetSpinSpeed() const { return SpinSpeed; }
 	
 protected:
-	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 	void UpdatePattern(float DeltaTime) override;
 	
