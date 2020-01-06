@@ -33,11 +33,15 @@ void UBulletPattern_Base::Broadcast_UpdatePattern_Event_Implementation(const flo
 	UpdatePattern(DeltaTime);
 }
 
-void UBulletPattern_Base::BeginPlay()
+void UBulletPattern_Base::Initialize()
 {
 	Player = UGameplayStatics::GetPlayerPawn(this, 0);
 
 	BulletPoolToUse = UObjectPoolFunctionLibrary::GetObjectPool(BulletPoolClassToUse.GetDefaultObject()->GetPoolName());
+}
+
+void UBulletPattern_Base::BeginPlay()
+{
 }
 
 void UBulletPattern_Base::Tick(float DeltaTime)
@@ -79,14 +83,11 @@ void UBulletPattern_Base::Tick(float DeltaTime)
 
 void UBulletPattern_Base::UpdatePattern(float DeltaTime)
 {
-	//BulletPatternSpawner->SpawnBullet(this, BulletDirection, BulletSpeed);
 }
 
 void UBulletPattern_Base::SpawnBullet()
 {
-	ABullet* Bullet = BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, BulletDirection, BulletSpeed);
-	//Bullet->GetNotInUseEvent().AddDynamic(this, &UBulletPattern_Base::OnBulletMaxDistanceTravelled);
-	Bullets.Add(Bullet);
+	Bullets.Add(BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, BulletDirection, BulletSpeed));
 }
 
 void UBulletPattern_Base::ChangeBulletPool(const TSubclassOf<UObjectPoolBase> NewBulletPool)

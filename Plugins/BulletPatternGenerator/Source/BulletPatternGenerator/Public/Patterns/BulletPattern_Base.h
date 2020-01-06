@@ -27,6 +27,7 @@ public:
 	UBulletPattern_Base();
 
 	void AssignSpawner(class ABulletPatternSpawner* NewSpawner);
+	void Initialize();
 
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "Begin Play", Category = "Bullet Pattern")
 		void Broadcast_BeginPlay_Event();
@@ -44,6 +45,10 @@ public:
 	// Retrieves the fire-rate of this pattern
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
 		FORCEINLINE float GetFireRate() const { return FireRate; }
+
+	// Retrieves the name of this pattern
+	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
+		FORCEINLINE FName GetPatternName() const { return PatternName; }
 
 	// Retrieves the bullet pool that this pattern is referencing
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
