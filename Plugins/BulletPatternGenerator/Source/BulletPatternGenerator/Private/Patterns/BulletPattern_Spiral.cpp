@@ -1,6 +1,5 @@
 // Copyright Ali El Saleh 2019
 
-
 #include "BulletPattern_Spiral.h"
 
 #include "BulletPatternSpawner.h"
@@ -23,6 +22,4 @@ void UBulletPattern_Spiral::Tick(const float DeltaTime)
 	BulletPatternSpawner->SetActorRotation(NewRotation);
 	TargetRotation = NewRotation.Rotator();
 	BulletDirection = NewRotation.Vector().GetSafeNormal();
-
-	BulletSpeed -= DeltaTime * 3.0f;
 }
