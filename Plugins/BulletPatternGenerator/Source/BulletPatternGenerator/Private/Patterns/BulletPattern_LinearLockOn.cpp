@@ -5,7 +5,12 @@
 
 #include "BulletPatternSpawner.h"
 
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Actor.h"
+#include "Bullet.h"
+
+#include "Engine/World.h"
+
+#include "Kismet/GameplayStatics.h"
 
 UBulletPattern_LinearLockOn::UBulletPattern_LinearLockOn()
 {
@@ -18,12 +23,36 @@ void UBulletPattern_LinearLockOn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BulletDirection = (Player->GetActorLocation() - BulletPatternSpawner->GetActorLocation()).GetSafeNormal();
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(this, AActor::StaticClass(), FoundActors);
+	for (auto Actor : FoundActors)
+	{
+		if (bLogActorList)
+			UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *GetName(), *Actor->GetName())
+
+		if (Actor->GetName() == LockOnActorName)
+		{
+			LockOnTarget = Actor;
+			break;
+		}
+	}
+
+	if (LockOnTarget)
+	{
+		BulletDirection = LockOnTarget->GetActorLocation() - BulletPatternSpawner->GetActorLocation();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s: LockOnTarget is null. Failed to find actor '%s' in %s. Please make sure that 'LockOnActorName' is correct!"), *GetName(), *LockOnActorName, *GetWorld()->GetMapName())
+	}
 }
 
 void UBulletPattern_LinearLockOn::UpdatePattern(const float DeltaTime)
 {
-	BulletDirection = (Player->GetActorLocation() - BulletPatternSpawner->GetActorLocation()).GetSafeNormal();
-	
-	Super::UpdatePattern(DeltaTime);
+	if (LockOnTarget)
+	{
+		BulletDirection = LockOnTarget->GetActorLocation() - BulletPatternSpawner->GetActorLocation();
+		
+		Super::UpdatePattern(DeltaTime);
+	}
 }

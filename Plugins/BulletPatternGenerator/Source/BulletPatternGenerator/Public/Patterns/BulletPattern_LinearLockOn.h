@@ -20,4 +20,13 @@ public:
 protected:
 	void BeginPlay() override;
 	void UpdatePattern(float DeltaTime) override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Bullet Pattern | Lock-On")
+		FString LockOnActorName = "None";
+
+	UPROPERTY(EditDefaultsOnly, DisplayName = "Log Actor List to Console", Category = "Bullet Pattern | Lock-On")
+		uint8 bLogActorList : 1;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern | Lock-On")
+		AActor* LockOnTarget;
 };
