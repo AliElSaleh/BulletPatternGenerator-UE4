@@ -3,20 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BulletPattern_LinearBase.h"
+#include "BulletPattern_LinearLockOn.h"
 #include "BulletPattern_LinearAiming.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BULLETPATTERNGENERATOR_API UBulletPattern_LinearAiming : public UBulletPattern_LinearBase
+class BULLETPATTERNGENERATOR_API UBulletPattern_LinearAiming : public UBulletPattern_LinearLockOn
 {
 	GENERATED_BODY()
 
 public:
 	UBulletPattern_LinearAiming();
-
-protected:
-	void Tick(float DeltaTime) override;
 };

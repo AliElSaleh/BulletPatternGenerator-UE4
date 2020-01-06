@@ -5,8 +5,6 @@
 
 #include "BulletPatternSpawner.h"
 
-//#include "GameFramework/Pawn.h"
-
 UBulletPattern_SineWaveBase::UBulletPattern_SineWaveBase()
 {
 	PatternName = "Sine Wave";
@@ -19,7 +17,7 @@ void UBulletPattern_SineWaveBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TargetRotation = BulletPatternSpawner->GetActorRotation();
+	//TargetRotation = BulletPatternSpawner->GetActorRotation();
 }
 
 void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
@@ -27,8 +25,6 @@ void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ElapsedTime += DeltaTime * SpinSpeed;
-
-	//TargetRotation = (Player->GetActorLocation() - BulletPatternSpawner->GetActorLocation()).Rotation();
 
 	FRotator NewRotation = TargetRotation;
 	const float DeltaRotationYaw = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * AngleSpread.Yaw;
@@ -52,7 +48,7 @@ void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
 	
 	BulletPatternSpawner->SetActorRotation(NewRotation);
 	TargetRotation = NewRotation;
-	BulletDirection = NewRotation.Vector().GetSafeNormal();
+	BulletDirection = NewRotation.Vector();
 }
 
 void UBulletPattern_SineWaveBase::UpdatePattern(float DeltaTime)
