@@ -92,7 +92,7 @@ void UBulletPattern_Base::SpawnBullet()
 
 void UBulletPattern_Base::ChangeBulletPool(const TSubclassOf<UObjectPoolBase> NewBulletPool)
 {
-	if (NewBulletPool)
+	if (NewBulletPool && UObjectPoolFunctionLibrary::DoesObjectPoolExist(NewBulletPool.GetDefaultObject()->GetPoolName()))
 		BulletPoolToUse = UObjectPoolFunctionLibrary::GetObjectPool(NewBulletPool.GetDefaultObject()->GetPoolName());
 }
 
