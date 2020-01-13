@@ -27,6 +27,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Object Pooler")
 		static TArray<class UObjectPoolBase*> GetAllObjectPools();
 
+	UFUNCTION(BlueprintPure, Category = "Object Pooler")
+		static bool DoesObjectPoolExist(FName PoolName);
+
 	/**
 	 * Marks the specified pooled actor not in use. Disables tick, hides actor in game, disables collision, deactivates components and sets actor time dilation to 0.0
 	 *
