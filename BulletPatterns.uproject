@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.22",
+	"EngineAssociation": "4.24",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -198,6 +198,11 @@
 		{
 			"Name": "SteamVR",
 			"Enabled": false
+		},
+		{
+			"Name": "WidgetThumbs",
+			"Enabled": false,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/c81cb24afdbb4ae5bddc3a4f8ac4eecd"
 		}
 	],
 	"TargetPlatforms": [
