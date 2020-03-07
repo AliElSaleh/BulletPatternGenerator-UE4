@@ -90,6 +90,11 @@ void UBulletPattern_Base::SpawnBullet()
 	Bullets.Add(BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, BulletDirection, BulletSpeed));
 }
 
+void UBulletPattern_Base::SpawnBulletInDirection(const FVector& InBulletDirection)
+{
+	Bullets.Add(BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, InBulletDirection, BulletSpeed));
+}
+
 void UBulletPattern_Base::ChangeBulletPool(const TSubclassOf<UObjectPoolBase> NewBulletPool)
 {
 	if (NewBulletPool && UObjectPoolFunctionLibrary::DoesObjectPoolExist(NewBulletPool.GetDefaultObject()->GetPoolName()))

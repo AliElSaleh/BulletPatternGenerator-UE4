@@ -63,6 +63,9 @@ protected:
 		void SpawnBullet();
 
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
+		void SpawnBulletInDirection(const FVector& InBulletDirection);
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
 		void ChangeBulletPool(TSubclassOf<UObjectPoolBase> NewBulletPool);
 
 	UFUNCTION()
