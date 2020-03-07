@@ -6,7 +6,6 @@
 #include "BulletPatternSpawner.h"
 
 #include "GameFramework/Actor.h"
-#include "Bullet.h"
 
 #include "Engine/World.h"
 
@@ -27,9 +26,6 @@ void UBulletPattern_LinearLockOn::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(this, AActor::StaticClass(), FoundActors);
 	for (auto Actor : FoundActors)
 	{
-		if (bLogActorList)
-			UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *GetName(), *Actor->GetName())
-
 		if (Actor->GetName() == LockOnActorName)
 		{
 			LockOnTarget = Actor;
@@ -56,3 +52,27 @@ void UBulletPattern_LinearLockOn::UpdatePattern(const float DeltaTime)
 		Super::UpdatePattern(DeltaTime);
 	}
 }
+
+#if WITH_EDITOR
+void UBulletPattern_LinearLockOn::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.GetPropertyName() == "bLogActorList")
+	{
+		bLogActorList = false;
+		
+		LogActorListToConsole();
+	}
+}
+
+void UBulletPattern_LinearLockOn::LogActorListToConsole()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GWorld, AActor::StaticClass(), FoundActors);
+	for (auto Actor : FoundActors)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *GetName(), *Actor->GetName())
+	}
+}
+#endif
