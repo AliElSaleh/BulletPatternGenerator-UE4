@@ -86,6 +86,20 @@ void ABulletPatternSpawner::Tick(const float DeltaTime)
 	ActiveBulletPattern->Broadcast_Tick_Event(DeltaTime);
 }
 
+void ABulletPatternSpawner::OnBulletPatternStarted_Implementation()
+{
+	if (ActiveBulletPattern)
+		ActiveBulletPattern->SetStartingRotation(GetActorRotation());
+}
+
+void ABulletPatternSpawner::OnBulletPatternStopped_Implementation()
+{
+}
+
+void ABulletPatternSpawner::OnBulletPatternChanged_Implementation()
+{
+}
+
 ABullet* ABulletPatternSpawner::SpawnBullet(UBulletPattern_Base* BulletPattern, UObjectPoolBase* BulletPool, const FVector& Direction, const float Speed)
 {
 	ABullet* Bullet = Cast<ABullet>(BulletPool->GetActorFromPool());
@@ -114,6 +128,8 @@ void ABulletPatternSpawner::StartBulletPattern(UBulletPattern_Base* BulletPatter
 	ActiveBulletPattern->Broadcast_BeginPlay_Event();
 
 	ResumeBulletPattern();
+
+	OnBulletPatternStarted();
 }
 
 void ABulletPatternSpawner::ResumeBulletPattern()
@@ -130,6 +146,8 @@ void ABulletPatternSpawner::StopBulletPattern()
 	ElapsedTime = 0.0f;
 	
 	bHasStarted = false;
+
+	OnBulletPatternStopped();
 }
 
 void ABulletPatternSpawner::ChangeBulletPattern(const TSubclassOf<UBulletPattern_Base> NewBulletPattern)
@@ -137,6 +155,8 @@ void ABulletPatternSpawner::ChangeBulletPattern(const TSubclassOf<UBulletPattern
 	StopBulletPattern();
 
 	StartBulletPattern(NewBulletPattern.GetDefaultObject());
+
+	OnBulletPatternChanged();
 }
 
 FName ABulletPatternSpawner::GetActiveBulletPatternName() const

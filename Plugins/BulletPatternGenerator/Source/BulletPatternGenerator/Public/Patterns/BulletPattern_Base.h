@@ -38,6 +38,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "Update Pattern", Category = "Bullet Pattern")
 		void Broadcast_UpdatePattern_Event(float DeltaTime);
 	
+	UFUNCTION(BlueprintCallable, Category = "Bullet pattern")
+		void SetStartingRotation(const FRotator& NewStartingRotation);
+
 	// Retrieves the speed that the bullets are using from this pattern
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
 		FORCEINLINE float GetBulletSpeed() const { return BulletSpeed; }
@@ -91,6 +94,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings", meta = (ClampMin = 0.005f))
 		float FireRate = 1.0f;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern | Settings")
+		FRotator StartingRotation = FRotator(0.0f);
+
 	// The firing rate when spawning bullets
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
 		TEnumAsByte<EBulletDespawnSetting> DespawnSetting = BDS_LifespanExpired;
@@ -105,9 +111,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
 		APawn* Player;
 
-	TArray<class ABullet*> Bullets;
+	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
+		TArray<class ABullet*> Bullets;
 
-	class UObjectPoolBase* BulletPoolToUse;
+	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern", DisplayName = "Active Bullet Pool")
+		class UObjectPoolBase* BulletPoolToUse;
 
 private:
 	void Broadcast_BeginPlay_Event_Implementation();

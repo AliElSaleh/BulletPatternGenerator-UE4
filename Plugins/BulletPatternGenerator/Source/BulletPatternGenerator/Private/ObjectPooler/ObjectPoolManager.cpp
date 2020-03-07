@@ -13,7 +13,7 @@ AObjectPoolManager::AObjectPoolManager()
 	PrimaryActorTick.SetTickFunctionEnable(false); 
 
 	bFindCameraComponentWhenViewTarget = false;
-	bCanBeDamaged = false;
+	SetCanBeDamaged(false);
 }
 
 void AObjectPoolManager::PostInitializeComponents()

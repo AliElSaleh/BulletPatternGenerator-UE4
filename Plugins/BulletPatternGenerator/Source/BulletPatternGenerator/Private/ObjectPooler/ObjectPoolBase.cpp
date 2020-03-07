@@ -100,7 +100,7 @@ APooledActor* UObjectPoolBase::GetActorFromPool()
 		return RetrieveActor();
 	}
 
-	return nullptr;
+	return RetrieveActor();
 }
 
 FName UObjectPoolBase::GetPoolName() const

@@ -33,7 +33,10 @@ public:
 		FName GetActiveBulletPatternName() const;
 
 	UFUNCTION(BlueprintPure, Category = "Bullet Pattern Spawner")
-		TSubclassOf<class UBulletPattern_Base> GetActiveBulletPatternClass() const { return BulletPatternClassFromEditor; }
+		FORCEINLINE TSubclassOf<class UBulletPattern_Base> GetActiveBulletPatternClass() const { return BulletPatternClassFromEditor; }
+
+	UFUNCTION(BlueprintPure, Category = "Bullet Pattern Spawner")
+		FORCEINLINE class UBulletPattern_Base* GetActiveBulletPattern() const { return ActiveBulletPattern; }
 
 protected:
 	void BeginPlay() override;
@@ -53,6 +56,17 @@ protected:
 	UPROPERTY(EditInstanceOnly, DisplayName = "Bullet Pattern", Category = "Bullet Pattern Spawner|Settings")
 		TSubclassOf<class UBulletPattern_Base> BulletPatternClassFromEditor;
 
+	UFUNCTION(BlueprintNativeEvent, Category = "Bullet Pattern Spawner")
+		void OnBulletPatternStarted();
+		virtual void OnBulletPatternStarted_Implementation();
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "Bullet Pattern Spawner")
+		void OnBulletPatternStopped();
+		virtual void OnBulletPatternStopped_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Bullet Pattern Spawner")
+		void OnBulletPatternChanged();
+		virtual void OnBulletPatternChanged_Implementation();
 private:
 	UPROPERTY()
 		class UBulletPattern_Base* ActiveBulletPattern;

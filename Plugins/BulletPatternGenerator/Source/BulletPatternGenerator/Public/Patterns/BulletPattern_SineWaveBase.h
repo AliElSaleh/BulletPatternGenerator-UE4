@@ -26,9 +26,6 @@ protected:
 	void UpdatePattern(float DeltaTime) override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Sine Wave")
-		FRotator TargetRotation = FRotator(0.0f);
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Sine Wave")
 		FRotator AngleSpread = FRotator(0.0f, 30.0f, 0.0f);
 
 	// The speed of the 'spinning' effect

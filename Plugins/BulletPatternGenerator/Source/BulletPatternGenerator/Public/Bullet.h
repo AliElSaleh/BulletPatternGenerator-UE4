@@ -34,6 +34,7 @@ public:
 
 protected:
 	void BeginPlay() override;
+	void Destroyed() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 		class UStaticMeshComponent* StaticMeshComponent;

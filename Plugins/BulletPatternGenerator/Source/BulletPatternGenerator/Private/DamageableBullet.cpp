@@ -9,5 +9,5 @@ ADamageableBullet::ADamageableBullet()
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 
-	bCanBeDamaged = true;
+	SetCanBeDamaged(true);
 }

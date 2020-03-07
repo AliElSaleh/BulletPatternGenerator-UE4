@@ -19,6 +19,11 @@ public:
 
 protected:
 	void BeginPlay() override;
+	void Tick(float DeltaTime) override;
+	
+#if WITH_EDITOR
+	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet Pattern | Lock-On")
 		FString LockOnActorName = "None";
@@ -28,4 +33,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern | Lock-On")
 		AActor* LockOnTarget;
+
+private:
+#if WITH_EDITOR
+	void LogActorListToConsole();
+#endif
 };

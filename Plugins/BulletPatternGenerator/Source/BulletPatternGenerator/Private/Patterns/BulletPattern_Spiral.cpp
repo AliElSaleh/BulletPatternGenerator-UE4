@@ -15,11 +15,11 @@ void UBulletPattern_Spiral::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	const FQuat OldRotation = TargetRotation.Quaternion();
+	const FQuat OldRotation = StartingRotation.Quaternion();
 	const FQuat DeltaRotation = (RotationRate * DeltaTime).Quaternion();
 	const FQuat NewRotation = (OldRotation * DeltaRotation);
 
 	BulletPatternSpawner->SetActorRotation(NewRotation);
-	TargetRotation = NewRotation.Rotator();
+	StartingRotation = NewRotation.Rotator();
 	BulletDirection = NewRotation.Vector().GetSafeNormal();
 }

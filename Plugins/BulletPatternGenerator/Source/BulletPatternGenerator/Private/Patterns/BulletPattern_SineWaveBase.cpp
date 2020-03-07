@@ -19,7 +19,7 @@ void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
 
 	ElapsedTime += DeltaTime * SpinSpeed;
 
-	FRotator NewRotation = TargetRotation;
+	FRotator NewRotation = StartingRotation;
 	const float DeltaRotationYaw = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * AngleSpread.Yaw;
 	const float DeltaRotationPitch = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * AngleSpread.Pitch;
 	const float DeltaRotationRoll = (FMath::Sin(ElapsedTime + DeltaTime) - FMath::Sin(ElapsedTime)) * AngleSpread.Roll;
@@ -40,7 +40,7 @@ void UBulletPattern_SineWaveBase::Tick(const float DeltaTime)
 	}
 	
 	//BulletPatternSpawner->SetActorRotation(NewRotation);
-	TargetRotation = NewRotation;
+	StartingRotation = NewRotation;
 	BulletDirection = NewRotation.Vector();
 }
 

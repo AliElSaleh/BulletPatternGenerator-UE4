@@ -36,6 +36,7 @@ void UBulletPattern_LinearLockOn::BeginPlay()
 	if (LockOnTarget)
 	{
 		BulletDirection = LockOnTarget->GetActorLocation() - BulletPatternSpawner->GetActorLocation();
+		StartingRotation = BulletDirection.Rotation();
 	}
 	else
 	{
@@ -48,6 +49,7 @@ void UBulletPattern_LinearLockOn::UpdatePattern(const float DeltaTime)
 	if (LockOnTarget)
 	{
 		BulletDirection = LockOnTarget->GetActorLocation() - BulletPatternSpawner->GetActorLocation();
+		StartingRotation = BulletDirection.Rotation();
 		
 		Super::UpdatePattern(DeltaTime);
 	}

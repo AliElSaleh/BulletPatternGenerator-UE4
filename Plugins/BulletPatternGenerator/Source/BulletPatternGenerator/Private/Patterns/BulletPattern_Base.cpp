@@ -40,6 +40,12 @@ void UBulletPattern_Base::Initialize()
 	BulletPoolToUse = UObjectPoolFunctionLibrary::GetObjectPool(BulletPoolClassToUse.GetDefaultObject()->GetPoolName());
 }
 
+void UBulletPattern_Base::SetStartingRotation(const FRotator& NewStartingRotation)
+{
+	StartingRotation = NewStartingRotation;
+	BulletDirection = NewStartingRotation.Vector();
+}
+
 void UBulletPattern_Base::BeginPlay()
 {
 }
@@ -87,12 +93,18 @@ void UBulletPattern_Base::UpdatePattern(float DeltaTime)
 
 void UBulletPattern_Base::SpawnBullet()
 {
-	Bullets.Add(BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, BulletDirection, BulletSpeed));
+	ABullet* Bullet = BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, BulletDirection, BulletSpeed);
+
+	if (Bullet)
+		Bullets.Add(Bullet);
 }
 
 void UBulletPattern_Base::SpawnBulletInDirection(const FVector& InBulletDirection)
 {
-	Bullets.Add(BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, InBulletDirection, BulletSpeed));
+	ABullet* Bullet = BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, InBulletDirection, BulletSpeed);
+
+	if (Bullet)
+		Bullets.Add(Bullet);
 }
 
 void UBulletPattern_Base::ChangeBulletPool(const TSubclassOf<UObjectPoolBase> NewBulletPool)

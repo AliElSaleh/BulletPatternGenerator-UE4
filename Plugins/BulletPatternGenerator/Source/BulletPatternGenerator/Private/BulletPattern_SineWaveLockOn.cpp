@@ -1,6 +1,5 @@
 // Copyright Ali El Saleh 2019
 
-
 #include "BulletPattern_SineWaveLockOn.h"
 
 #include "GameFramework/Actor.h"
@@ -28,9 +27,6 @@ void UBulletPattern_SineWaveLockOn::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(this, AActor::StaticClass(), FoundActors);
 	for (auto Actor : FoundActors)
 	{
-		if (bLogActorList)
-			UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *GetName(), *Actor->GetName())
-
 		if (Actor->GetName() == LockOnActorName)
 		{
 			LockOnTarget = Actor;
@@ -47,5 +43,40 @@ void UBulletPattern_SineWaveLockOn::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("%s: LockOnTarget is null. Failed to find actor '%s' in %s. Please make sure that 'LockOnActorName' is correct!"), *GetName(), *LockOnActorName, *GetWorld()->GetMapName())
 	}
 
-	TargetRotation = UKismetMathLibrary::FindLookAtRotation(BulletPatternSpawner->GetActorLocation(), LockOnTarget->GetActorLocation()) + AngleSpread*0.5f;
+	StartingRotation = (LockOnTarget->GetActorLocation() - BulletPatternSpawner->GetActorLocation()).Rotation();
+	//StartingRotation = UKismetMathLibrary::FindLookAtRotation(BulletPatternSpawner->GetActorLocation(), LockOnTarget->GetActorLocation()) + AngleSpread*0.5f;
+	BulletPatternSpawner->SetActorRotation(StartingRotation);
 }
+
+void UBulletPattern_SineWaveLockOn::Tick(const float DeltaTime)
+{
+	StartingRotation = (LockOnTarget->GetActorLocation() - BulletPatternSpawner->GetActorLocation()).Rotation();
+
+	BulletPatternSpawner->SetActorRotation(StartingRotation);
+
+	Super::Tick(DeltaTime);
+}
+
+#if WITH_EDITOR
+void UBulletPattern_SineWaveLockOn::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.GetPropertyName() == "bLogActorList")
+	{
+		bLogActorList = false;
+		
+		LogActorListToConsole();
+	}
+}
+
+void UBulletPattern_SineWaveLockOn::LogActorListToConsole()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GWorld, AActor::StaticClass(), FoundActors);
+	for (auto Actor : FoundActors)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *GetName(), *Actor->GetName())
+	}
+}
+#endif

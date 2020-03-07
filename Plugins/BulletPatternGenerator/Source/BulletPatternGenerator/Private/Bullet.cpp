@@ -6,8 +6,6 @@
 
 #include "GameFramework/ProjectileMovementComponent.h"
 
-#include "BulletPatternBase.h"
-
 #include "Engine/StaticMesh.h"
 
 ABullet::ABullet()
@@ -43,7 +41,7 @@ ABullet::ABullet()
 	ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
 	ProjectileMovementComponent->Velocity = FVector(0.0f);
 	
-	bCanBeDamaged = false;
+	SetCanBeDamaged(false);
 	bFindCameraComponentWhenViewTarget = false;
 }
 
@@ -54,11 +52,15 @@ void ABullet::BeginPlay()
 	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlap);
 }
 
+void ABullet::Destroyed()
+{
+	Super::Destroyed();
+
+	UE_LOG(LogTemp, Error, TEXT("%s: Destroyed! An actor of class APooledActor should never be destroyed! Please use PooledActor_EndPlay instead!"), *GetName())
+}
+
 void ABullet::SetupBehaviour(class UBulletPattern_Base* BulletPattern, FVector InDirection, const float InSpeed)
 {
-	//if (!BulletPattern)
-	//	return;
-
 	InDirection.Normalize();
 
 	Direction = InDirection;

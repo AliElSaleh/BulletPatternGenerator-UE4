@@ -21,9 +21,5 @@ protected:
 	void UpdatePattern(float DeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Spinnable")
-		FRotator TargetRotation = FRotator(0.0f);
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet Pattern | Spinnable")
 		FRotator RotationRate = FRotator(0.0f, 100.0f, 0.0f);
-
 };
