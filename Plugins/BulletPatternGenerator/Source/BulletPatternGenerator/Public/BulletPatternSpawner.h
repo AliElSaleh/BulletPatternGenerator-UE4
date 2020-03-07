@@ -33,12 +33,12 @@ public:
 		FName GetActiveBulletPatternName() const;
 
 	UFUNCTION(BlueprintPure, Category = "Bullet Pattern Spawner")
-		TSubclassOf<class UBulletPattern_Base> GetActiveBulletPatternClass() const { return BulletPatternClass; }
+		TSubclassOf<class UBulletPattern_Base> GetActiveBulletPatternClass() const { return BulletPatternClassFromEditor; }
 
 protected:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
-	
+
 	// A list of all bullet patterns that this spawner can use
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, DisplayName = "Bullet Patterns", Category = "Bullet Pattern Spawner|Settings")
 		TArray<TSubclassOf<class UBulletPattern_Base>> BulletPatternClasses;
@@ -49,8 +49,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Components")
 		class URotatingMovementComponent* RotatingMovementComponent;
 	
+	// The bullet pattern to begin with
 	UPROPERTY(EditInstanceOnly, DisplayName = "Bullet Pattern", Category = "Bullet Pattern Spawner|Settings")
-		TSubclassOf<class UBulletPattern_Base> BulletPatternClass;
+		TSubclassOf<class UBulletPattern_Base> BulletPatternClassFromEditor;
+
 private:
 	UPROPERTY()
 		class UBulletPattern_Base* ActiveBulletPattern;

@@ -16,7 +16,7 @@ ABulletPatternSpawner::ABulletPatternSpawner()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 
-	bCanBeDamaged = false;
+	SetCanBeDamaged(false);
 	bFindCameraComponentWhenViewTarget = false;
 
 	UStaticMesh* StaticMesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'")));
@@ -49,9 +49,10 @@ void ABulletPatternSpawner::BeginPlay()
 		BulletPatterns.Add(NewObject<UBulletPattern_Base>(this, BulletPatternClass.Get(), BulletPatternClass->GetFName(), RF_NoFlags, BulletPatternClass.GetDefaultObject(), true));
 	}
 
-	if (BulletPatternClass)
+	// If we chose a pattern class from the editor, then use that
+	if (BulletPatternClassFromEditor)
 	{
-		const int32 Index = BulletPatterns.Add(NewObject<UBulletPattern_Base>(this, BulletPatternClass.Get(), BulletPatternClass->GetFName(), RF_NoFlags, BulletPatternClass.GetDefaultObject(), true));
+		const int32 Index = BulletPatterns.Add(NewObject<UBulletPattern_Base>(this, BulletPatternClassFromEditor.Get(), BulletPatternClassFromEditor->GetFName(), RF_NoFlags, BulletPatternClassFromEditor.GetDefaultObject(), true));
 		
 		ActiveBulletPattern = BulletPatterns[Index];
 	}
