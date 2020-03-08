@@ -33,6 +33,47 @@ void UBulletPattern_Base::Broadcast_UpdatePattern_Event_Implementation(const flo
 	UpdatePattern(DeltaTime);
 }
 
+void UBulletPattern_Base::BeginPlay()
+{
+	bLifetimeExpired = false;
+	ElapsedTime = 0.0f;
+
+	Modifiers.Empty();
+	for (auto Modifier : ModifierTypes)
+	{
+		if (Modifier.Value)
+		{
+			auto ModifierObject = NewObject<UBulletPattern_ModifierBase>(this, Modifier.Key.Get(), Modifier.Key->GetFName(), RF_NoFlags, Modifier.Key.GetDefaultObject(), true);
+			ModifierObject->bIsModifierApplied = false;
+
+			Modifiers.Add(ModifierObject);
+		}
+	}
+
+	if (bApplyAllModifiersOnBeginPlay)
+		ApplyAllModifiers();
+}
+
+void UBulletPattern_Base::Tick(const float DeltaTime)
+{
+	if (!bLifetimeExpired && ElapsedTime > PatternLifetime && PatternLifetime != 0.0f)
+	{
+		OnPatternLifetimeExpired();
+	}
+
+	for (auto Modifier : Modifiers)
+	{
+		if (Modifier && Modifier->CanTick())
+			Modifier->Tick(DeltaTime);
+	}
+
+	ElapsedTime += DeltaTime;
+}
+
+void UBulletPattern_Base::UpdatePattern(float DeltaTime)
+{
+}
+
 void UBulletPattern_Base::Initialize()
 {
 	Player = UGameplayStatics::GetPlayerPawn(this, 0);
@@ -46,11 +87,24 @@ void UBulletPattern_Base::SetStartingRotation(const FRotator& NewStartingRotatio
 	BulletDirection = NewStartingRotation.Vector();
 }
 
-void UBulletPattern_Base::ApplyModifier(UBulletPattern_ModifierBase* Modifier)
+void UBulletPattern_Base::ApplyModifier(const int32 Index)
 {
-	if (Modifier)
+	if (bApplyAllModifiersOnBeginPlay || Index >= ModifierTypes.Num())
+		return;
+
+	TArray<bool> ModifierTypes_Values;
+	ModifierTypes.GenerateValueArray(ModifierTypes_Values);
+	
+	if (ModifierTypes_Values.IsValidIndex(Index) && ModifierTypes_Values[Index] && !Modifiers[Index]->bIsModifierApplied)
+		Modifiers[Index]->Apply(this);
+}
+
+void UBulletPattern_Base::ApplyAllModifiers()
+{
+	for (auto Modifier : Modifiers)
 	{
-		Modifier->Apply();
+		if (Modifier)
+			Modifier->Apply(this);
 	}
 }
 
@@ -103,26 +157,6 @@ void UBulletPattern_Base::CheckBulletsShouldDespawn()
 	}
 }
 
-void UBulletPattern_Base::BeginPlay()
-{
-	bLifetimeExpired = false;
-	ElapsedTime = 0.0f;
-}
-
-void UBulletPattern_Base::Tick(const float DeltaTime)
-{
-	if (!bLifetimeExpired && ElapsedTime > PatternLifetime && PatternLifetime != 0.0f)
-	{
-		OnPatternLifetimeExpired();
-	}
-
-	ElapsedTime += DeltaTime;
-}
-
-void UBulletPattern_Base::UpdatePattern(float DeltaTime)
-{
-}
-
 void UBulletPattern_Base::SpawnBullet()
 {
 	ABullet* Bullet = BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, BulletDirection, BulletSpeed);
@@ -168,4 +202,3 @@ void UBulletPattern_Base::OnPatternLifetimeExpired()
 
 	BulletPatternSpawner->StopBulletPattern();
 }
-

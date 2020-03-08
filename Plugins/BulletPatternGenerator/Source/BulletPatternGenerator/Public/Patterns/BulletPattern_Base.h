@@ -42,10 +42,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Bullet pattern")
 		void SetStartingRotation(const FRotator& NewStartingRotation);
 
+	UFUNCTION(BlueprintCallable, Category = "Bullet pattern", DisplayName = "Apply Modifier (Index)")
+		void ApplyModifier(int32 Index);
+
 	UFUNCTION(BlueprintCallable, Category = "Bullet pattern")
-		void ApplyModifier(class UBulletPattern_ModifierBase* Modifier);
+		void ApplyAllModifiers();
 
 	void CheckBulletsShouldDespawn();
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
+		void ChangeBulletPool(TSubclassOf<class UObjectPoolBase> NewBulletPool);
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet pattern")
+		void SetBulletSpeed(const float NewBulletSpeed) { BulletSpeed = NewBulletSpeed; }
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet pattern")
+		void SetFireRate(const float NewFireRate) { FireRate = NewFireRate; }
 
 	// Retrieves the speed that the bullets are using from this pattern
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
@@ -62,7 +74,6 @@ public:
 	// Retrieves the bullet pool that this pattern is referencing
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
 		FORCEINLINE class UObjectPoolBase* GetBulletPool() const { return BulletPoolToUse; }
-
 protected:
 	virtual void BeginPlay();
 	virtual void Tick(float DeltaTime);
@@ -74,15 +85,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
 		void SpawnBulletInDirection(const FVector& InBulletDirection);
 
-	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
-		void ChangeBulletPool(TSubclassOf<UObjectPoolBase> NewBulletPool);
-
-	UFUNCTION()
-		void OnBulletMaxDistanceTravelled(class APooledActor* PooledActor);
-
+	void OnBulletMaxDistanceTravelled(class APooledActor* PooledActor);
 	void OnBulletOutOfScreen(class APooledActor* PooledActor);
 	void OnPatternLifetimeExpired();
-
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
 		float ElapsedTime = 0.0f;
 
@@ -119,7 +125,13 @@ protected:
 		float PatternLifetime = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
-		TArray<TSubclassOf<class UBulletPattern_ModifierBase>> Modifiers;
+		uint8 bApplyAllModifiersOnBeginPlay : 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings", DisplayName = "Modifiers")
+		TMap<TSubclassOf<class UBulletPattern_ModifierBase>, bool> ModifierTypes;
+
+	UPROPERTY()
+		TArray<class UBulletPattern_ModifierBase*> Modifiers;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
 		class ABulletPatternSpawner* BulletPatternSpawner;
