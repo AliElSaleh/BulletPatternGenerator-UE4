@@ -44,6 +44,9 @@ void ABulletPatternSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (bDisableSpawner)
+		Destroy();
+	
 	for (auto BulletPatternClass : BulletPatternClasses)
 	{
 		BulletPatterns.Add(NewObject<UBulletPattern_Base>(this, BulletPatternClass.Get(), BulletPatternClass->GetFName(), RF_NoFlags, BulletPatternClass.GetDefaultObject(), true));
@@ -71,6 +74,11 @@ void ABulletPatternSpawner::BeginPlay()
 void ABulletPatternSpawner::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bDisableSpawner)
+		return;
+
+	ActiveBulletPattern->CheckBulletsShouldDespawn();
 
 	if (!bHasStarted)
 		return;
@@ -142,7 +150,7 @@ void ABulletPatternSpawner::ResumeBulletPattern()
 
 void ABulletPatternSpawner::StopBulletPattern()
 {
-	SetActorTickEnabled(false);
+	//SetActorTickEnabled(false);
 	ElapsedTime = 0.0f;
 	
 	bHasStarted = false;

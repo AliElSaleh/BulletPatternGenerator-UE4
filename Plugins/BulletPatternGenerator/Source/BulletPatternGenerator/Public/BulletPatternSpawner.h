@@ -55,6 +55,9 @@ protected:
 	// The bullet pattern to begin with
 	UPROPERTY(EditInstanceOnly, DisplayName = "Bullet Pattern", Category = "Bullet Pattern Spawner|Settings")
 		TSubclassOf<class UBulletPattern_Base> BulletPatternClassFromEditor;
+	
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Bullet Pattern Spawner|Settings")
+		uint8 bDisableSpawner : 1;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Bullet Pattern Spawner")
 		void OnBulletPatternStarted();
