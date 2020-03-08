@@ -46,45 +46,77 @@ void UBulletPattern_Base::SetStartingRotation(const FRotator& NewStartingRotatio
 	BulletDirection = NewStartingRotation.Vector();
 }
 
-void UBulletPattern_Base::BeginPlay()
+void UBulletPattern_Base::ApplyModifier(UBulletPattern_ModifierBase* Modifier)
 {
+	if (Modifier)
+	{
+		Modifier->Apply();
+	}
 }
 
-void UBulletPattern_Base::Tick(float DeltaTime)
+void UBulletPattern_Base::CheckBulletsShouldDespawn()
 {
-	if (DespawnSetting == BDS_LifespanExpired)
-		return;
-
-	for (int32 i = 0; i < Bullets.Num(); ++i)
+	if (bLifetimeExpired && Bullets.Num() == 0)
 	{
-		switch (DespawnSetting)
+		BulletPatternSpawner->StopBulletPattern();
+		return;
+	}
+
+	switch (DespawnSetting)
+	{
+		case BDS_BulletLifespanExpired:
+		break;
+		
+		case BDS_MaxDistanceTravelled:
 		{
-			case BDS_MaxDistanceTravelled:
+			for (int32 i = 0; i < Bullets.Num(); ++i)
 			{
 				const float DistanceFromSpawner = FVector::Distance(BulletPatternSpawner->GetActorLocation(), Bullets[i]->GetActorLocation());
 
 				if (DistanceFromSpawner > MaxBulletTravelDistance)
 					OnBulletMaxDistanceTravelled(Bullets[i]);
 			}
-			break;
+		}
+		break;
 
-			case BDS_OutOfScreen:
+		case BDS_OutOfScreen:
+		{
+			for (int32 i = 0; i < Bullets.Num(); ++i)
 			{
-				FVector2D ScreenPosition;
-				UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), Bullets[i]->GetActorLocation(), ScreenPosition);
+				FVector2D BulletPositionOnScreen;
+				UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(this, 0), Bullets[i]->GetActorLocation(), BulletPositionOnScreen);
 
 				FVector2D ViewportSize;
 				GEngine->GameViewport->GetViewportSize(ViewportSize);
 					
 				if (!Bullets[i]->WasRecentlyRendered() && 
-					(ScreenPosition.X > ViewportSize.X || ScreenPosition.Y > ViewportSize.Y || ScreenPosition.X < 0.0f || ScreenPosition.Y < 0.0f))
+					(BulletPositionOnScreen.X > ViewportSize.X || BulletPositionOnScreen.Y > ViewportSize.Y || BulletPositionOnScreen.X < 0.0f || BulletPositionOnScreen.Y < 0.0f))
 				{
 					OnBulletOutOfScreen(Bullets[i]);
 				}
 			}
-			break;
 		}
+		break;
+
+		default:
+		break;
 	}
+}
+
+void UBulletPattern_Base::BeginPlay()
+{
+	bLifetimeExpired = false;
+	ElapsedTime = 0.0f;
+}
+
+void UBulletPattern_Base::Tick(const float DeltaTime)
+{
+	if (!bLifetimeExpired && ElapsedTime > PatternLifetime && PatternLifetime != 0.0f)
+	{
+		OnPatternLifetimeExpired();
+	}
+
+	ElapsedTime += DeltaTime;
 }
 
 void UBulletPattern_Base::UpdatePattern(float DeltaTime)
@@ -129,3 +161,11 @@ void UBulletPattern_Base::OnBulletOutOfScreen(APooledActor* PooledActor)
 	PooledActor->PooledActor_EndPlay();
 	Bullets.Remove(Cast<ABullet>(PooledActor));
 }
+
+void UBulletPattern_Base::OnPatternLifetimeExpired()
+{
+	bLifetimeExpired = true;
+
+	BulletPatternSpawner->StopBulletPattern();
+}
+

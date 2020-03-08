@@ -5,12 +5,13 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Engine/EngineTypes.h"
+#include "BulletPattern_ModifierBase.h"
 #include "BulletPattern_Base.generated.h"
 
 UENUM(BlueprintType)
 enum EBulletDespawnSetting
 {
-	BDS_LifespanExpired			UMETA(DisplayName="When bullet lifespan has expired"),
+	BDS_BulletLifespanExpired	UMETA(DisplayName="When bullet lifespan has expired"),
 	BDS_OutOfScreen				UMETA(DisplayName="When bullet has left the screen"),
 	BDS_MaxDistanceTravelled	UMETA(DisplayName="When bullet has travelled beyond the max distance")
 };
@@ -40,6 +41,11 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Bullet pattern")
 		void SetStartingRotation(const FRotator& NewStartingRotation);
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet pattern")
+		void ApplyModifier(class UBulletPattern_ModifierBase* Modifier);
+
+	void CheckBulletsShouldDespawn();
 
 	// Retrieves the speed that the bullets are using from this pattern
 	UFUNCTION(BlueprintPure, Category = "Bullet pattern")
@@ -74,7 +80,11 @@ protected:
 	UFUNCTION()
 		void OnBulletMaxDistanceTravelled(class APooledActor* PooledActor);
 
-		void OnBulletOutOfScreen(class APooledActor* PooledActor);
+	void OnBulletOutOfScreen(class APooledActor* PooledActor);
+	void OnPatternLifetimeExpired();
+
+	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
+		float ElapsedTime = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
 		FName PatternName = "Default Pattern";
@@ -99,11 +109,17 @@ protected:
 
 	// The firing rate when spawning bullets
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
-		TEnumAsByte<EBulletDespawnSetting> DespawnSetting = BDS_LifespanExpired;
+		TEnumAsByte<EBulletDespawnSetting> DespawnSetting = BDS_BulletLifespanExpired;
 
 	// The firing rate when spawning bullets
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings", meta = (ClampMin = 0.0f))
 		float MaxBulletTravelDistance = 5000.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
+		float PatternLifetime = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bullet Pattern | Settings")
+		TArray<TSubclassOf<class UBulletPattern_ModifierBase>> Modifiers;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern")
 		class ABulletPatternSpawner* BulletPatternSpawner;
@@ -116,6 +132,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Bullet Pattern", DisplayName = "Active Bullet Pool")
 		class UObjectPoolBase* BulletPoolToUse;
+
+	uint8 bLifetimeExpired : 1;
 
 private:
 	void Broadcast_BeginPlay_Event_Implementation();
