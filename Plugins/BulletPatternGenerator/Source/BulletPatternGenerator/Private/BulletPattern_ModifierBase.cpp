@@ -23,6 +23,8 @@ void UBulletPattern_ModifierBase::Reset_Implementation()
 {
 	BulletPattern = nullptr;
 	bIsModifierApplied = false;
+	ElapsedTime = 0.0f;
+	bCanTick = false;
 }
 
 void UBulletPattern_ModifierBase::OnModifierApplied_Implementation()

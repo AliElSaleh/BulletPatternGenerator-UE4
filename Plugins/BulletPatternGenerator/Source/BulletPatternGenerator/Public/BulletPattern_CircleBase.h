@@ -20,10 +20,4 @@ public:
 protected:
 	void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintPure, Category = "Bullet Pattern | Circle Base")
-	FVector2D CalculatePositionOnCircle(FVector2D Origin, float Radius, float Angle);
-
-	UFUNCTION(BlueprintPure, Category = "Bullet Pattern | Circle Base")
-	FVector CalculateLocationOnSphere(FVector Origin, float Radius, float Angle, float Phi);
-	
 };

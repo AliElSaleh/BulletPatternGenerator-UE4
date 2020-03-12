@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "SubclassOf.h"
 #include "BulletPattern_ModifierBase.generated.h"
 
 /**
@@ -17,11 +18,11 @@ class BULLETPATTERNGENERATOR_API UBulletPattern_ModifierBase : public UObject
 public:
 	UBulletPattern_ModifierBase();
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Modifier")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Modifier")
 	void Apply(class UBulletPattern_Base* InBulletPattern);
 	virtual void Apply_Implementation(class UBulletPattern_Base* InBulletPattern);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Modifier")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Modifier")
 	void Reset();
 	virtual void Reset_Implementation();
 
@@ -41,7 +42,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings")
-		FName ModifierName;
+	FName ModifierName;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings")
 	uint8 bCanTick : 1;
@@ -51,4 +52,14 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Modifier")
 	class UBulletPattern_Base* BulletPattern;
+};
+
+UCLASS(Abstract, BlueprintType, Blueprintable)
+class BULLETPATTERNGENERATOR_API UBulletPatternModifier_CustomClass : public UBulletPattern_ModifierBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings")
+	TSubclassOf<class UBulletPattern_Base> RequiredBulletPatternClass;
 };

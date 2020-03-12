@@ -45,8 +45,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Bullet pattern", DisplayName = "Apply Modifier (Index)")
 		void ApplyModifier(int32 Index);
 
+	UFUNCTION(BlueprintCallable, Category = "Bullet pattern", DisplayName = "Remove Modifier (Index)")
+		void RemoveModifier(int32 Index);
+
 	UFUNCTION(BlueprintCallable, Category = "Bullet pattern")
 		void ApplyAllModifiers();
+
+	UFUNCTION(BlueprintCallable, Category = "Bullet pattern")
+		void RemoveAllModifiers();
 
 	void CheckBulletsShouldDespawn();
 
@@ -80,10 +86,10 @@ protected:
 	virtual void UpdatePattern(float DeltaTime);
 
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
-		void SpawnBullet();
+		class ABullet* SpawnBullet();
 
 	UFUNCTION(BlueprintCallable, Category = "Bullet Pattern")
-		void SpawnBulletInDirection(const FVector& InBulletDirection);
+		class ABullet* SpawnBulletInDirection(const FVector& InBulletDirection);
 
 	void OnBulletMaxDistanceTravelled(class APooledActor* PooledActor);
 	void OnBulletOutOfScreen(class APooledActor* PooledActor);

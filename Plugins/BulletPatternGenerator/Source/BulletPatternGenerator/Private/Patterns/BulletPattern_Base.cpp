@@ -41,13 +41,10 @@ void UBulletPattern_Base::BeginPlay()
 	Modifiers.Empty();
 	for (auto Modifier : ModifierTypes)
 	{
-		if (Modifier.Value)
-		{
-			auto ModifierObject = NewObject<UBulletPattern_ModifierBase>(this, Modifier.Key.Get(), Modifier.Key->GetFName(), RF_NoFlags, Modifier.Key.GetDefaultObject(), true);
-			ModifierObject->bIsModifierApplied = false;
+		auto ModifierObject = NewObject<UBulletPattern_ModifierBase>(this, Modifier.Key.Get(), Modifier.Key->GetFName(), RF_NoFlags, Modifier.Key.GetDefaultObject(), true);
+		ModifierObject->bIsModifierApplied = false;
 
-			Modifiers.Add(ModifierObject);
-		}
+		Modifiers.Add(ModifierObject);
 	}
 
 	if (bApplyAllModifiersOnBeginPlay)
@@ -89,7 +86,7 @@ void UBulletPattern_Base::SetStartingRotation(const FRotator& NewStartingRotatio
 
 void UBulletPattern_Base::ApplyModifier(const int32 Index)
 {
-	if (bApplyAllModifiersOnBeginPlay || Index >= ModifierTypes.Num())
+	if (bApplyAllModifiersOnBeginPlay || Index >= Modifiers.Num())
 		return;
 
 	TArray<bool> ModifierTypes_Values;
@@ -99,12 +96,30 @@ void UBulletPattern_Base::ApplyModifier(const int32 Index)
 		Modifiers[Index]->Apply(this);
 }
 
+void UBulletPattern_Base::RemoveModifier(const int32 Index)
+{
+	if (Index >= Modifiers.Num())
+		return;
+
+	if (Modifiers.IsValidIndex(Index))
+		Modifiers[Index]->Reset();
+}
+
 void UBulletPattern_Base::ApplyAllModifiers()
 {
 	for (auto Modifier : Modifiers)
 	{
 		if (Modifier)
 			Modifier->Apply(this);
+	}
+}
+
+void UBulletPattern_Base::RemoveAllModifiers()
+{
+	for (auto Modifier : Modifiers)
+	{
+		if (Modifier)
+			Modifier->Reset();
 	}
 }
 
@@ -157,20 +172,24 @@ void UBulletPattern_Base::CheckBulletsShouldDespawn()
 	}
 }
 
-void UBulletPattern_Base::SpawnBullet()
+class ABullet* UBulletPattern_Base::SpawnBullet()
 {
 	ABullet* Bullet = BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, BulletDirection, BulletSpeed);
 
 	if (Bullet)
 		Bullets.Add(Bullet);
+
+	return Bullet;
 }
 
-void UBulletPattern_Base::SpawnBulletInDirection(const FVector& InBulletDirection)
+class ABullet* UBulletPattern_Base::SpawnBulletInDirection(const FVector& InBulletDirection)
 {
 	ABullet* Bullet = BulletPatternSpawner->SpawnBullet(this, BulletPoolToUse, InBulletDirection, BulletSpeed);
 
 	if (Bullet)
 		Bullets.Add(Bullet);
+
+	return Bullet;
 }
 
 void UBulletPattern_Base::ChangeBulletPool(const TSubclassOf<UObjectPoolBase> NewBulletPool)
