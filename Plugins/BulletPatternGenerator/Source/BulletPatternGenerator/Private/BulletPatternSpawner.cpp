@@ -110,7 +110,8 @@ void ABulletPatternSpawner::OnBulletPatternChanged_Implementation()
 
 ABullet* ABulletPatternSpawner::SpawnBullet(UBulletPattern_Base* BulletPattern, UObjectPoolBase* BulletPool, const FVector& Direction, const float Speed)
 {
-	ABullet* Bullet = Cast<ABullet>(BulletPool->GetActorFromPool());
+	EObjectPoolRetrieveActorResult Result;
+	ABullet* Bullet = Cast<ABullet>(BulletPool->GetActorFromPool(Result));
 
 	if (Bullet)
 	{

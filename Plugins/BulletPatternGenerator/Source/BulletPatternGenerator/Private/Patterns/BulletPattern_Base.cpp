@@ -41,10 +41,13 @@ void UBulletPattern_Base::BeginPlay()
 	Modifiers.Empty();
 	for (auto Modifier : ModifierTypes)
 	{
-		auto ModifierObject = NewObject<UBulletPattern_ModifierBase>(this, Modifier.Key.Get(), Modifier.Key->GetFName(), RF_NoFlags, Modifier.Key.GetDefaultObject(), true);
-		ModifierObject->bIsModifierApplied = false;
+		if (Modifier.Key)
+		{
+			UBulletPattern_ModifierBase* ModifierObject = NewObject<UBulletPattern_ModifierBase>(this, Modifier.Key.Get(), Modifier.Key->GetFName(), RF_NoFlags, Modifier.Key.GetDefaultObject(), true);
+			ModifierObject->bIsModifierApplied = false;
 
-		Modifiers.Add(ModifierObject);
+			Modifiers.Add(ModifierObject);
+		}
 	}
 
 	if (bApplyAllModifiersOnBeginPlay)
@@ -75,7 +78,15 @@ void UBulletPattern_Base::Initialize()
 {
 	Player = UGameplayStatics::GetPlayerPawn(this, 0);
 
-	BulletPoolToUse = UObjectPoolFunctionLibrary::GetObjectPool(BulletPoolClassToUse.GetDefaultObject()->GetPoolName());
+	if (BulletPoolClassToUse.GetDefaultObject())
+	{
+		BulletPoolToUse = UObjectPoolFunctionLibrary::GetObjectPool(BulletPoolClassToUse.GetDefaultObject()->GetPoolName());
+	}
+	else
+	{
+		if (UObjectPoolFunctionLibrary::GetNumOfObjectPoolsInWorld() > 0)
+			BulletPoolToUse = UObjectPoolFunctionLibrary::GetAllObjectPools()[0];
+	}
 }
 
 void UBulletPattern_Base::SetStartingRotation(const FRotator& NewStartingRotation)

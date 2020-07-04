@@ -1,4 +1,4 @@
-// Copyright Ali El Saleh 2019
+// Copyright Ali El Saleh 2020
 
 #include "PooledActor.h"
 
@@ -12,6 +12,8 @@ APooledActor::APooledActor()
 
 	bEverAllowTick = true;
 	bEverAllowCollisions = true;
+
+	bFindCameraComponentWhenViewTarget = false;
 }
 
 void APooledActor::AssignToPool(UObjectPoolBase* InPoolToAssign)
@@ -25,11 +27,15 @@ void APooledActor::AssignToPool(UObjectPoolBase* InPoolToAssign)
 	PoolOwner = InPoolToAssign;
 }
 
-void APooledActor::BeginPlay()
+void APooledActor::AssignToPool(UObjectPoolComponent* InPoolToAssign)
 {
-	Super::BeginPlay();
-
-	Components = GetComponents().Array();
+	//if (!InPoolToAssign)
+	//	return;
+//
+	//if (PoolOwner)
+	//	PoolOwner->RemoveActorFromPool(this);
+//
+	//PoolOwner = InPoolToAssign;
 }
 
 void APooledActor::Destroyed()
@@ -51,7 +57,7 @@ void APooledActor::PooledActor_BeginPlay_Implementation()
 void APooledActor::PooledActor_EndPlay_Implementation()
 {
 	MarkNotInUse(true);
-	SetActorLocation(FVector(0.0f), false, nullptr, ETeleportType::TeleportPhysics);
+	//SetActorLocation(FVector(0.0f), false, nullptr, ETeleportType::TeleportPhysics);
 }
 
 void APooledActor::MarkInUse(const bool bBroadcast)
@@ -92,8 +98,8 @@ void APooledActor::SetActive(const bool bActive)
 		SetActorEnableCollision(bEverAllowCollisions);
 
 		ActivateAllComponents();
-
-		if (MaxLifespan > 0.0f)
+		
+		if (MaxLifespan > 0.0f && IsInGameThread())
 			GetWorldTimerManager().SetTimer(TH_LifeSpan, this, &APooledActor::OnLifeSpanExpired, MaxLifespan);
 	}
 	else
@@ -109,12 +115,15 @@ void APooledActor::SetActive(const bool bActive)
 
 		DeactivateAllComponents();
 
-		GetWorldTimerManager().ClearTimer(TH_LifeSpan);
+		if (IsInGameThread())
+			GetWorldTimerManager().ClearTimer(TH_LifeSpan);
 	}
 }
 
 void APooledActor::ActivateAllComponents()
 {
+	TArray<UActorComponent*> Components = GetComponents().Array();
+	
 	for (auto Component : Components)
 	{
 		if (Component)
@@ -124,6 +133,8 @@ void APooledActor::ActivateAllComponents()
 
 void APooledActor::DeactivateAllComponents()
 {
+	TArray<UActorComponent*> Components = GetComponents().Array();
+
 	for (auto Component : Components)
 	{
 		if (Component)

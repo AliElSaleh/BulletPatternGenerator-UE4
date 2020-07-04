@@ -1,7 +1,7 @@
-// Copyright Ali El Saleh 2019
+// Copyright Ali El Saleh 2020
 
 #include "ObjectPoolBase.h"
-
+#include "ObjectPoolFunctionLibrary.h"
 #include "PooledActor.h"
 
 #include "Engine/World.h"
@@ -12,30 +12,61 @@ UObjectPoolBase::UObjectPoolBase()
 
 void UObjectPoolBase::BeginPlay()
 {
-	World = GetWorld();
+	if (bFillPoolOnBeginPlay)
+		FillPool();
+}
 
-	FillPool();
+void UObjectPoolBase::Tick(const float DeltaTime)
+{
+	if (WarmUp.bEnabled && WarmUp.WarmUpCounter < WarmUp.WarmUpAcross && PoolChunks.Num() > 0)
+	{
+		for (int32 i = 0 ; i < PoolChunks[WarmUp.WarmUpCounter].Num(); i++)
+		{
+			AddActorToPool(SpawnPooledObject());
+		}
+	
+		WarmUp.WarmUpCounter++;
+		
+		if (WarmUp.WarmUpCounter == WarmUp.WarmUpAcross)
+			WarmUp.bWarmUpComplete = true;
+	}
 }
 
 void UObjectPoolBase::FillPool()
 {
-	if (PooledActors.Num() >= PoolSize)
+	World = GetWorld();
+
+	if (PooledActors.Num() >= PoolSize || WarmUp.bWarmUpComplete)
 		return;
 
-	for (int32 i = 0; i < PoolSize; ++i)
+	if (WarmUp.bEnabled && WarmUp.WarmUpAcross > 1 && WarmUp.WarmUpAcross <= PoolSize)
 	{
-		AddActorToPool(SpawnPooledObject());
+		WarmUp.WarmUpCounter = 0;
+		WarmUp.bWarmUpComplete = false;
+		
+		PoolChunks = UObjectPoolFunctionLibrary::SplitPoolSize(PoolSize, WarmUp.WarmUpAcross);
 	}
-}
+	else
+	{
+		WarmUp.bEnabled = false;
 
-APooledActor* UObjectPoolBase::SpawnPooledObject()
-{
-	return World->SpawnActor<APooledActor>(ObjectClassToPool, CurrentLocation, CurrentRotation);
+		for (int32 i = 0; i < PoolSize; ++i)
+		{
+			AddActorToPool(SpawnPooledObject());
+		}
+		
+		WarmUp.bWarmUpComplete = true;
+	}
 }
 
 void UObjectPoolBase::EmptyPool()
 {
 	PooledActors.Empty();
+}
+
+APooledActor* UObjectPoolBase::SpawnPooledObject()
+{
+	return World->SpawnActor<APooledActor>(ObjectClassToPool, FVector(0.0f), FRotator(0.0f));
 }
 
 void UObjectPoolBase::AddActorToPool(APooledActor* NewPooledActor)
@@ -52,55 +83,62 @@ void UObjectPoolBase::RemoveActorFromPool(APooledActor* InPooledActor)
 	PooledActors.Remove(InPooledActor);
 }
 
-APooledActor* UObjectPoolBase::GetActorFromPool()
+APooledActor* UObjectPoolBase::GetActorFromPool(EObjectPoolRetrieveActorResult& Results)
 {
+	if (!WarmUp.bWarmUpComplete)
+	{
+		Results = EObjectPoolRetrieveActorResult::Failed;
+		return nullptr;
+	}
+	
 	const auto RetrieveActor = [&]()
-	{
-		APooledActor* Null = nullptr; // Required for compliation to succeed
-
-		for (auto Actor : PooledActors)
-		{
-			if (!Actor->IsInUse())
-			{
-				return Actor;
-			}
+    {
+	    APooledActor* NullActor = nullptr;
+		
+	    for (APooledActor* Actor : PooledActors)
+	    {
+		    if (Actor && Actor->IsNotInUse())
+		    {
+			    Results = EObjectPoolRetrieveActorResult::Succeeded;
+			    return Actor;
+		    }
 		}
 
-		return Null;
-	};
+	    Results = EObjectPoolRetrieveActorResult::Failed;
+	    return NullActor;
+    };
 
-	if (ReuseSetting == OPRS_Reuse)
-	{
-		if (AreAllActorsInUse())
-		{
-			for (auto Actor : PooledActors)
-			{
-				return Actor;
-			}
-		}
-
-		return RetrieveActor();
-	}
-
-	if (ReuseSetting == OPRS_DoNotReuse)
-	{
-		return RetrieveActor();
-	}
-
-	if (ReuseSetting == OPRS_CreateNewActor)
-	{
-		if (AreAllActorsInUse())
-		{
-			APooledActor* SpawnedActor = SpawnPooledObject();
-			AddActorToPool(SpawnedActor);
-			
-			return SpawnedActor;
+    if (ReuseSetting == EObjectPoolReuseSetting::Reuse)
+    {
+	    if (AreAllActorsInUse())
+	    {
+		    Results = EObjectPoolRetrieveActorResult::Succeeded;
+		    return PooledActors[0];
 		}
 
 		return RetrieveActor();
-	}
+    }
 
-	return RetrieveActor();
+    if (ReuseSetting == EObjectPoolReuseSetting::DoNotReuse)
+    {
+		return RetrieveActor();
+    }
+
+    if (ReuseSetting == EObjectPoolReuseSetting::CreateNewActor)
+    {
+	    if (AreAllActorsInUse())
+	    {
+		    APooledActor* SpawnedActor = SpawnPooledObject();
+		    AddActorToPool(SpawnedActor);
+
+		    Results = EObjectPoolRetrieveActorResult::Succeeded;
+		    return SpawnedActor;
+		}
+
+		return RetrieveActor();
+    }
+
+    return RetrieveActor();
 }
 
 FName UObjectPoolBase::GetPoolName() const
@@ -118,9 +156,9 @@ bool UObjectPoolBase::AreAllActorsInUse() const
 	int32 ActorsInUse = 0;
 	for (auto Actor : PooledActors)
 	{
-		if (Actor->IsInUse())
+		if (Actor && Actor->IsInUse())
 			++ActorsInUse;
 	}
 
-	return ActorsInUse == PooledActors.Num();
+	return PooledActors.Num() != 0 && ActorsInUse == PooledActors.Num();
 }

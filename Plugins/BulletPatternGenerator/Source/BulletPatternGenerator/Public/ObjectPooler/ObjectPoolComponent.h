@@ -3,17 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
 #include "ObjectPoolerEnums.h"
 #include "ObjectPoolerStructs.h"
-#include "ObjectPoolBase.generated.h"
+#include "ObjectPoolComponent.generated.h"
 
-UCLASS(Abstract, Blueprintable, BlueprintType)
-class BULLETPATTERNGENERATOR_API UObjectPoolBase : public UObject
+UCLASS(ClassGroup=("Object Pool"), meta=(BlueprintSpawnableComponent))
+class BULLETPATTERNGENERATOR_API UObjectPoolComponent : public UActorComponent
 {
 	GENERATED_BODY()
-	
+
 public:	
-	UObjectPoolBase();
+	UObjectPoolComponent();
 
 	/**
 	 * Retrieves an actor from the pool that's not currently in use. If all actors in the pool are in use, a null reference will be returned.
@@ -24,8 +25,8 @@ public:
 	virtual class APooledActor* GetActorFromPool(EObjectPoolRetrieveActorResult& Results);
 	
 	/**
-	 * Removes an actor from the pool. ONLY USE SPARINGLY. DO NOT USE in place of 'PooledActor_EndPlay'. If you're finished with an actor, call 'PooledActor_EndPlay' from the pooled actor to return it to the pool.
-	 * Alternatively, call 'MarkActorNotInUse' from an object pool reference.
+	 * Removes an actor from the pool. ONLY USE SPARINGLY. Call 'PooledActor_EndPlay' from the pooled actor to return it to the pool.
+	 * Alternatively, call 'MarkActorNotInUse' from an object pool.
 	 *
 	 * @param InPooledActor	 The pooled actor to remove from the pool
 	 */
@@ -62,13 +63,7 @@ public:
 	 * @returns				True, if there are no actors in the pool. Otherwise, false
 	 */
 	UFUNCTION(BlueprintPure, Category = "Object Pool")
-	bool IsPoolEmpty() const { return PooledActors.Num() == 0; }
-
-	UFUNCTION(BlueprintPure, Category = "Object Pool")
-	FORCEINLINE TArray<APooledActor*> GetPooledActors() const { return PooledActors; }
-	
-	UFUNCTION(BlueprintPure, Category = "Object Pool")
-	FORCEINLINE EObjectPoolReuseSetting GetReuseSetting() const { return ReuseSetting; }
+	FORCEINLINE bool IsPoolEmpty() const { return PooledActors.Num() == 0; }
 
 	/**
 	* If warm up is enabled, has the warm up process finished?
@@ -76,12 +71,12 @@ public:
 	* @returns				True, if warm up has been completed. Otherwise, false
 	*/
 	UFUNCTION(BlueprintPure, Category = "Object Pool")
-    FORCEINLINE bool IsWarmUpComplete() const { return WarmUp.bEnabled ? WarmUp.bWarmUpComplete : true; }
-
-	void BeginPlay();
-	void Tick(float DeltaTime);
+	FORCEINLINE bool IsWarmUpComplete() const { return WarmUp.bEnabled ? WarmUp.bWarmUpComplete : true; }
 
 protected:
+	void BeginPlay() override;
+	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 	/**
 	 * Spawns an actor from the pool into the world. Marks the actor not in use as well
 	 *
@@ -102,12 +97,12 @@ protected:
 	void EmptyPool();
 
 	/**
-	* Adds an actor to the pool
-	*
-	* @param NewPooledActor	 The pooled actor to add to the pool
-	*/
+	 * Adds an actor to the pool
+	 *
+	 * @param NewPooledActor	 The pooled actor to add to the pool
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Object Pool")
-    void AddActorToPool(class APooledActor* NewPooledActor);
+	void AddActorToPool(class APooledActor* NewPooledActor);
 
 	// The name of the pool
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pool Settings")
@@ -126,17 +121,14 @@ protected:
 
 	// Populate the pool on begin play?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pool Settings")
-	uint8 bFillPoolOnBeginPlay : 1;
-	
+    uint8 bFillPoolOnBeginPlay : 1;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Optimization")
 	FObjectPoolWarmUpSetting WarmUp;
 
 	// References to the pooled actors
 	UPROPERTY(BlueprintReadOnly, Category = "Object Pool")
 	TArray<class APooledActor*> PooledActors;
-	
-	UPROPERTY()
-	class APooledActor* ActorRetrieved;
 
 private:
 	TArray<TArray<int32>> PoolChunks;
@@ -145,4 +137,3 @@ private:
 	UPROPERTY()
 	UWorld* World;
 };
-

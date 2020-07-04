@@ -1,60 +1,68 @@
-// Copyright Ali El Saleh 2019
+// Copyright Ali El Saleh 2020
 
 #include "ObjectPoolManager.h"
+#include "ObjectPoolFunctionLibrary.h"
 
 #include "ObjectPooler/ObjectPoolBase.h"
 
-#include "ObjectPoolFunctionLibrary.h"
-
 AObjectPoolManager::AObjectPoolManager()
 {
-	PrimaryActorTick.bCanEverTick = false;
-	PrimaryActorTick.bStartWithTickEnabled = false;
-	PrimaryActorTick.SetTickFunctionEnable(false); 
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	PrimaryActorTick.SetTickFunctionEnable(true); 
 
 	bFindCameraComponentWhenViewTarget = false;
 	SetCanBeDamaged(false);
+}
+
+void AObjectPoolManager::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
+
+void AObjectPoolManager::Tick(const float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	TArray<UObjectPoolBase*> ObjectPools = UObjectPoolFunctionLibrary::GetAllObjectPools();
+	for (UObjectPoolBase* ObjectPool : ObjectPools)
+	{
+		if (ObjectPool)
+			ObjectPool->Tick(DeltaTime);
+	}
 }
 
 void AObjectPoolManager::PostInitializeComponents()
 {	
 	Super::PostInitializeComponents();
 
-	if (UObjectPoolFunctionLibrary::ObjectPools.Num() > 0)
-		DestroyAllObjectPools();
-
 	SpawnAllObjectPools();
-
-	for (auto ObjectPool : UObjectPoolFunctionLibrary::ObjectPools)
-	{
-		ObjectPool->BeginPlay();
-	}
 }
 
 void AObjectPoolManager::SpawnAllObjectPools()
 {
-	for (const auto ObjectPool : ObjectPools)
+	for (const auto ObjectPoolClass : ObjectPoolClasses)
 	{
-		SpawnObjectPool(ObjectPool);
+		SpawnObjectPool(ObjectPoolClass);
 	}
-}
-
-void AObjectPoolManager::DestroyAllObjectPools()
-{
-	UObjectPoolFunctionLibrary::ObjectPools.Empty();
 }
 
 void AObjectPoolManager::SpawnObjectPool(const TSubclassOf<UObjectPoolBase> InPoolClass)
 {
-	//check(InPoolClass && "A crash occured because a pool class is null. Check the ObjectPoolManager actor in the world and make sure that there are no empty properties in the object pool array.");
-
 	if (InPoolClass)
-		UObjectPoolFunctionLibrary::ObjectPools.Add(NewObject<UObjectPoolBase>(this, InPoolClass.Get(), InPoolClass->GetFName(), RF_NoFlags, InPoolClass.GetDefaultObject(), true));
+	{
+		UObjectPoolBase* ObjectPool = NewObject<UObjectPoolBase>(this, InPoolClass.Get(), InPoolClass->GetFName(), RF_NoFlags, InPoolClass.GetDefaultObject(), true);
+		if (ObjectPool)
+		{
+			ObjectPool->BeginPlay();
+		}
+	}
 }
 
 UObjectPoolBase* AObjectPoolManager::GetPool(const FString InPoolName)
 {
-	for (const auto ObjectPool : ObjectPools)
+	for (const auto ObjectPool : ObjectPoolClasses)
 	{
 		if (ObjectPool.GetDefaultObject()->GetPoolName().ToString() == InPoolName)
 			return ObjectPool.GetDefaultObject();
@@ -65,7 +73,7 @@ UObjectPoolBase* AObjectPoolManager::GetPool(const FString InPoolName)
 
 FString AObjectPoolManager::GetPoolName(UObjectPoolBase* InObjectPool)
 {
-	for (const auto ObjectPool : ObjectPools)
+	for (const auto ObjectPool : ObjectPoolClasses)
 	{
 		if (ObjectPool.GetDefaultObject() == InObjectPool)
 			return ObjectPool.GetDefaultObject()->GetPoolName().ToString();
@@ -76,7 +84,7 @@ FString AObjectPoolManager::GetPoolName(UObjectPoolBase* InObjectPool)
 
 TSubclassOf<UObjectPoolBase> AObjectPoolManager::GetPoolClass(UObjectPoolBase* InObjectPool)
 {
-	for (const auto ObjectPool : ObjectPools)
+	for (const auto ObjectPool : ObjectPoolClasses)
 	{
 		if (ObjectPool.GetDefaultObject() == InObjectPool)
 			return ObjectPool;
@@ -87,7 +95,7 @@ TSubclassOf<UObjectPoolBase> AObjectPoolManager::GetPoolClass(UObjectPoolBase* I
 
 TSubclassOf<UObjectPoolBase> AObjectPoolManager::GetPoolClassFromString(const FString InPoolName)
 {
-	for (auto ObjectPool : ObjectPools)
+	for (auto ObjectPool : ObjectPoolClasses)
 	{
 		if (ObjectPool.GetDefaultObject()->GetPoolName().ToString() == InPoolName)
 			return ObjectPool;
