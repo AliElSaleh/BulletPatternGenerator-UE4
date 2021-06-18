@@ -75,3 +75,9 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# ReSharper files
+.idea/*
+
+# Third-party assets
+Content/ModularMagicCircles/*
